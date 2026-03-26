@@ -64,14 +64,22 @@
     <h1>Plant ID Flashcards</h1>
     <p id="counter"></p>
 
-    <div class="card">
+    <div class="card-wrap">
+  <div class="flashcard" id="flashcard" onclick="toggleAnswer()">
+    <div class="card-face card-front">
       <div class="images" id="images"></div>
-      <button onclick="toggleAnswer()">Flip Card</button>
-      <button class="secondary" onclick="prevCard()">Previous</button>
-      <button class="secondary" onclick="nextCard()">Next</button>
-      <div class="answer" id="answer" style="display:none;"></div>
+    </div>
+    <div class="card-face card-back">
+      <div class="answer" id="answer"></div>
     </div>
   </div>
+</div>
+
+<div style="margin-top:16px;">
+  <button onclick="toggleAnswer()">Flip Card</button>
+  <button class="secondary" onclick="prevCard()">Previous</button>
+  <button class="secondary" onclick="nextCard()">Next</button>
+</div>
 
   <script>
     const cards = [
@@ -80,21 +88,27 @@
         front_image_url_1: "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0034506_4674.jpg",
         front_image_url_2: "https://apps.rhs.org.uk/plantselectorimages/detail/moja02566.jpg",
         front_image_url_3: "",
-        back_text: "Griselinia littoralis\\n\\n(New Zealand broadleaf)"
+        back_text: back_text: `Griselinia littoralis
+
+(New Zealand broadleaf)`
       },
       {
         id: "card_3",
         front_image_url_1: "https://apps.rhs.org.uk/plantselectorimages/detail/elbo14556.jpg",
         front_image_url_2: "https://apps.rhs.org.uk/plantselectorimages/detail/visi191021.jpg",
         front_image_url_3: "",
-        back_text: "Ligustrum ovalifolium\\n\\n(Garden privet)"
+        back_text: `Ligustrum ovalifolium
+        
+(Garden privet)`
       },
       {
         id: "card_4",
         front_image_url_1: "https://apps.rhs.org.uk/plantselectorimages/detail/RHS_WSYD0003474_788.JPG",
         front_image_url_2: "https://apps.rhs.org.uk/plantselectorimages/detail/RHS_WSYD0000553_788.JPG",
         front_image_url_3: "https://apps.rhs.org.uk/plantselectorimages/detail/Web_Use-PUB0012020_788.jpg",
-        back_text: "Fatsia japonica\\n\\n(Japanese aralia)"
+        back_text: `Fatsia japonica 
+
+(Japanese aralia)`
       }
     ];
 
@@ -117,7 +131,7 @@
         .join("");
 
       document.getElementById("answer").textContent = card.back_text;
-      document.getElementById("answer").style.display = showingAnswer ? "block" : "none";
+      document.getElementById("flashcard").classList.toggle("flipped", showingAnswer);
     }
 
     function toggleAnswer() {
@@ -145,3 +159,48 @@
   </script>
 </body>
 </html>
+.card-wrap {
+  perspective: 1000px;
+}
+
+.flashcard {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  cursor: pointer;
+}
+
+.flashcard.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  min-height: 420px;
+  backface-visibility: hidden;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.card-front {
+  z-index: 2;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.answer {
+  font-size: 32px;
+  white-space: pre-wrap;
+}
