@@ -6,9 +6,9 @@
   <title>Plant ID Flashcards</title>
   <style>
     * {
-  box-sizing: border-box;
-}
-    
+      box-sizing: border-box;
+    }
+
     body {
       font-family: system-ui, -apple-system, sans-serif;
       margin: 0;
@@ -23,40 +23,55 @@
     }
 
     h1 {
-      margin-top: 0;
+      margin: 0 0 8px 0;
+      text-align: center;
+    }
+
+    .counter {
+      text-align: center;
+      margin: 0 0 16px 0;
+      color: #475569;
+    }
+
+    .top-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
     }
 
     .card-wrap {
-  perspective: 1000px;
-  margin-top: 24px;
-  height: 460px;
-}
+      perspective: 1000px;
+      margin-top: 24px;
+      height: 460px;
+    }
 
-.flashcard {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.6s;
-  cursor: pointer;
-}
+    .flashcard {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+      cursor: pointer;
+    }
 
     .flashcard.flipped {
       transform: rotateY(180deg);
     }
 
     .card-face {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  overflow: auto;
-}
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      overflow: auto;
+    }
 
     .card-front {
       z-index: 2;
@@ -74,12 +89,14 @@
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
     }
 
     .images img {
-      max-width: 280px;
-      max-height: 280px;
+      max-width: 260px;
+      max-height: 340px;
       border-radius: 8px;
       object-fit: contain;
       background: #fff;
@@ -93,88 +110,361 @@
       color: white;
       cursor: pointer;
       font-size: 16px;
-      margin-right: 8px;
     }
 
     button.secondary {
       background: #64748b;
     }
 
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .study-controls {
+      margin-top: 28px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
     .answer {
       font-size: 32px;
       white-space: pre-wrap;
+    }
+
+    .quiz-card,
+    .results-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .quiz-images {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .quiz-images img {
+      max-width: 260px;
+      max-height: 280px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: #fff;
+    }
+
+    .quiz-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .quiz-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .quiz-nav {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .results-score {
+      font-size: 40px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .results-sub {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #475569;
+    }
+
+    .result-item {
+      border-top: 1px solid #e2e8f0;
+      padding: 16px 0;
+    }
+
+    .result-item:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .correct {
+      color: #15803d;
+      font-weight: 600;
+    }
+
+    .incorrect {
+      color: #b91c1c;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Plant ID Flashcards</h1>
-    <p id="counter"></p>
+    <p class="counter" id="counter"></p>
 
-    <div class="card-wrap">
-      <div class="flashcard" id="flashcard" onclick="toggleAnswer()">
-        <div class="card-face card-front">
-          <div class="images" id="images"></div>
-        </div>
-        <div class="card-face card-back">
-          <div class="answer" id="answer"></div>
-        </div>
-      </div>
+    <div class="top-controls">
+      <button id="studyModeBtn" onclick="switchMode('study')">Study</button>
+      <button class="secondary" id="quizModeBtn" onclick="startQuiz()">Quiz</button>
     </div>
 
-    <div style="margin-top: 28px; display: flex; gap: 12px; justify-content: center;">
-  <button onclick="toggleAnswer()">Flip Card</button>
-  <button class="secondary" onclick="prevCard()">Previous</button>
-  <button class="secondary" onclick="nextCard()">Next</button>
-</div>
+    <div id="app"></div>
   </div>
 
   <script src="cards.js"></script>
-<script>
-  let currentIndex = 0;
-  let showingAnswer = false;
+  <script>
+    let mode = "study";
 
-  function renderCard() {
-    const card = cards[currentIndex];
-    const images = [
-      card.front_image_url_1,
-      card.front_image_url_2,
-      card.front_image_url_3
-    ].filter(Boolean);
+    let currentIndex = 0;
+    let showingAnswer = false;
 
-    document.getElementById("counter").textContent =
-      `Card ${currentIndex + 1} of ${cards.length}`;
+    let quizCards = [];
+    let quizAnswers = [];
+    let currentQuizIndex = 0;
+    let showingResults = false;
 
-    document.getElementById("images").innerHTML = images
-      .map(url => `<img src="${url}" alt="Plant image" onerror="this.style.display='none'">`)
-      .join("");
-
-    document.getElementById("answer").textContent = card.back_text;
-    document.getElementById("flashcard").classList.toggle("flipped", showingAnswer);
-  }
-
-  function toggleAnswer() {
-    showingAnswer = !showingAnswer;
-    renderCard();
-  }
-
-  function prevCard() {
-    if (currentIndex > 0) {
-      currentIndex--;
-      showingAnswer = false;
-      renderCard();
+    function shuffleArray(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
     }
-  }
 
-  function nextCard() {
-    if (currentIndex < cards.length - 1) {
-      currentIndex++;
-      showingAnswer = false;
-      renderCard();
+    function switchMode(newMode) {
+      mode = newMode;
+      showingResults = false;
+      updateModeButtons();
+      renderApp();
     }
-  }
 
-  renderCard();
-</script>
+    function updateModeButtons() {
+      const studyBtn = document.getElementById("studyModeBtn");
+      const quizBtn = document.getElementById("quizModeBtn");
+
+      if (mode === "study") {
+        studyBtn.classList.remove("secondary");
+        quizBtn.classList.add("secondary");
+      } else {
+        quizBtn.classList.remove("secondary");
+        studyBtn.classList.add("secondary");
+      }
+    }
+
+    function formatBotanicalText(text) {
+      return text;
+    }
+
+    function renderStudyMode() {
+      const card = cards[currentIndex];
+      const images = [
+        card.front_image_url_1,
+        card.front_image_url_2,
+        card.front_image_url_3
+      ].filter(Boolean);
+
+      document.getElementById("counter").textContent =
+        `Card ${currentIndex + 1} of ${cards.length}`;
+
+      document.getElementById("app").innerHTML = `
+        <div class="card-wrap">
+          <div class="flashcard ${showingAnswer ? 'flipped' : ''}" id="flashcard" onclick="toggleAnswer()">
+            <div class="card-face card-front">
+              <div class="images">
+                ${images.map(url => `<img src="${url}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
+              </div>
+            </div>
+            <div class="card-face card-back">
+              <div class="answer">${formatBotanicalText(card.back_text)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="study-controls">
+          <button onclick="toggleAnswer()">Flip Card</button>
+          <button class="secondary" onclick="prevCard()" ${currentIndex === 0 ? "disabled" : ""}>Previous</button>
+          <button class="secondary" onclick="nextCard()" ${currentIndex === cards.length - 1 ? "disabled" : ""}>Next</button>
+        </div>
+      `;
+    }
+
+    function renderQuizMode() {
+      if (showingResults) {
+        renderResults();
+        return;
+      }
+
+      const card = quizCards[currentQuizIndex];
+      const images = [
+        card.front_image_url_1,
+        card.front_image_url_2,
+        card.front_image_url_3
+      ].filter(Boolean);
+
+      document.getElementById("counter").textContent =
+        `Question ${currentQuizIndex + 1} of ${quizCards.length}`;
+
+      document.getElementById("app").innerHTML = `
+        <div class="quiz-card">
+          <div class="quiz-images">
+            ${images.map(url => `<img src="${url}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
+          </div>
+
+          <label class="quiz-label" for="quizAnswer">What is the name of this plant?</label>
+          <input
+            id="quizAnswer"
+            class="quiz-input"
+            type="text"
+            value="${escapeHtml(quizAnswers[currentQuizIndex] || "")}"
+            oninput="quizAnswers[${currentQuizIndex}] = this.value"
+            placeholder="Enter plant name"
+          >
+
+          <div class="quiz-nav">
+            <button class="secondary" onclick="prevQuizQuestion()" ${currentQuizIndex === 0 ? "disabled" : ""}>Previous</button>
+            ${
+              currentQuizIndex === quizCards.length - 1
+                ? `<button onclick="submitQuiz()">Submit Quiz</button>`
+                : `<button onclick="nextQuizQuestion()">Next</button>`
+            }
+          </div>
+        </div>
+      `;
+
+      const input = document.getElementById("quizAnswer");
+      if (input) input.focus();
+    }
+
+    function renderResults() {
+      let score = 0;
+
+      const resultsHtml = quizCards.map((card, index) => {
+        const userAnswer = (quizAnswers[index] || "").trim();
+        const correctAnswer = card.back_text.split("\n")[0].trim();
+        const isCorrect = normalize(userAnswer) === normalize(correctAnswer);
+
+        if (isCorrect) score++;
+
+        return `
+          <div class="result-item">
+            <div class="${isCorrect ? 'correct' : 'incorrect'}">
+              ${isCorrect ? "Correct" : "Incorrect"}
+            </div>
+            <div><strong>Your answer:</strong> ${escapeHtml(userAnswer || "(blank)")}</div>
+            <div><strong>Correct answer:</strong> ${escapeHtml(correctAnswer)}</div>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("counter").textContent = `Quiz complete`;
+
+      document.getElementById("app").innerHTML = `
+        <div class="results-card">
+          <div class="results-score">${score} / ${quizCards.length}</div>
+          <div class="results-sub">Your score</div>
+          ${resultsHtml}
+          <div class="study-controls">
+            <button onclick="startQuiz()">New Quiz</button>
+            <button class="secondary" onclick="switchMode('study')">Back to Study</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function normalize(text) {
+      return text
+        .toLowerCase()
+        .replace(/[^\w\s×]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function startQuiz() {
+      const shuffled = shuffleArray(cards);
+      quizCards = shuffled.slice(0, Math.min(10, shuffled.length));
+      quizAnswers = new Array(quizCards.length).fill("");
+      currentQuizIndex = 0;
+      showingResults = false;
+      mode = "quiz";
+      updateModeButtons();
+      renderApp();
+    }
+
+    function nextQuizQuestion() {
+      if (currentQuizIndex < quizCards.length - 1) {
+        currentQuizIndex++;
+        renderApp();
+      }
+    }
+
+    function prevQuizQuestion() {
+      if (currentQuizIndex > 0) {
+        currentQuizIndex--;
+        renderApp();
+      }
+    }
+
+    function submitQuiz() {
+      showingResults = true;
+      renderApp();
+    }
+
+    function toggleAnswer() {
+      showingAnswer = !showingAnswer;
+      renderApp();
+    }
+
+    function prevCard() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        showingAnswer = false;
+        renderApp();
+      }
+    }
+
+    function nextCard() {
+      if (currentIndex < cards.length - 1) {
+        currentIndex++;
+        showingAnswer = false;
+        renderApp();
+      }
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderApp() {
+      if (mode === "study") {
+        renderStudyMode();
+      } else {
+        renderQuizMode();
+      }
+    }
+
+    updateModeButtons();
+    renderApp();
+  </script>
 </body>
 </html>
