@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Plant ID Flashcards</title>
+  <title>RHS PCA2 Plant ID</title>
   <style>
     * {
       box-sizing: border-box;
@@ -18,19 +18,21 @@
     }
 
     .wrap {
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto;
     }
 
     h1 {
       margin: 0 0 8px 0;
       text-align: center;
+      font-size: 36px;
     }
 
     .counter {
       text-align: center;
-      margin: 0 0 10px 0;
+      margin: 0 0 8px 0;
       color: #475569;
+      font-size: 16px;
     }
 
     .deck-status {
@@ -81,9 +83,9 @@
     }
 
     .card-wrap {
-      perspective: 1000px;
+      perspective: 1200px;
       margin-top: 24px;
-      height: 460px;
+      height: 500px;
     }
 
     .flashcard {
@@ -91,7 +93,7 @@
       width: 100%;
       height: 100%;
       transform-style: preserve-3d;
-      transition: transform 0.6s;
+      transition: transform 0.7s ease;
       cursor: pointer;
     }
 
@@ -106,10 +108,12 @@
       height: 100%;
       backface-visibility: hidden;
       background: white;
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.10);
       overflow: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .card-front {
@@ -118,10 +122,33 @@
 
     .card-back {
       transform: rotateY(180deg);
-      display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+
+    .card-side-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #475569;
+      background: #e2e8f0;
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .card-hint {
+      font-size: 13px;
+      color: #64748b;
     }
 
     .images {
@@ -129,7 +156,7 @@
       gap: 12px;
       justify-content: center;
       align-content: center;
-      height: 100%;
+      flex: 1;
     }
 
     .images.one {
@@ -147,25 +174,27 @@
     .images img {
       width: 100%;
       max-width: 100%;
-      border-radius: 8px;
+      border-radius: 10px;
       object-fit: contain;
       background: #fff;
       display: block;
+      border: 1px solid #e2e8f0;
     }
 
     .images.one img {
-      max-height: 340px;
+      max-height: 360px;
     }
 
     .images.two img {
-      max-height: 280px;
+      max-height: 290px;
     }
 
     .images.three img {
       max-height: 220px;
     }
 
-    button {
+    button,
+    .button-link {
       padding: 10px 16px;
       border: none;
       border-radius: 10px;
@@ -173,9 +202,13 @@
       color: white;
       cursor: pointer;
       font-size: 16px;
+      text-decoration: none;
+      display: inline-block;
+      line-height: 1.2;
     }
 
-    button.secondary {
+    button.secondary,
+    .button-link.secondary {
       background: #64748b;
     }
 
@@ -198,7 +231,22 @@
 
     .answer {
       font-size: 32px;
+      line-height: 1.4;
       white-space: pre-wrap;
+    }
+
+    .common-name-display {
+      margin-top: 14px;
+      font-size: 20px;
+      color: #64748b;
+    }
+
+    .back-actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .quiz-card,
@@ -210,32 +258,38 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
 
-    .quiz-images {
+    .quiz-images,
+    .result-images {
       display: grid;
       gap: 12px;
       justify-content: center;
       margin: 20px 0;
     }
 
-    .quiz-images.one {
+    .quiz-images.one,
+    .result-images.one {
       grid-template-columns: 1fr;
     }
 
-    .quiz-images.two {
+    .quiz-images.two,
+    .result-images.two {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .quiz-images.three {
+    .quiz-images.three,
+    .result-images.three {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .quiz-images img {
+    .quiz-images img,
+    .result-images img {
       width: 100%;
       max-width: 100%;
       border-radius: 8px;
       object-fit: contain;
       background: #fff;
       display: block;
+      border: 1px solid #e2e8f0;
     }
 
     .quiz-images.one img {
@@ -248,6 +302,15 @@
 
     .quiz-images.three img {
       max-height: 190px;
+    }
+
+    .result-images.one img {
+      max-height: 220px;
+    }
+
+    .result-images.two img,
+    .result-images.three img {
+      max-height: 140px;
     }
 
     .quiz-label,
@@ -300,12 +363,16 @@
 
     .result-item {
       border-top: 1px solid #e2e8f0;
-      padding: 16px 0;
+      padding: 18px 0;
     }
 
     .result-item:first-child {
       border-top: none;
       padding-top: 0;
+    }
+
+    .result-topline {
+      margin-bottom: 10px;
     }
 
     .correct {
@@ -318,6 +385,19 @@
       font-weight: 600;
     }
 
+    .result-note {
+      margin-top: 6px;
+      color: #475569;
+      font-size: 14px;
+    }
+
+    .result-links {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .hidden-file-input {
       display: none;
     }
@@ -325,6 +405,10 @@
     .empty-message {
       text-align: center;
       color: #64748b;
+    }
+
+    em {
+      font-style: italic;
     }
 
     @media (max-width: 700px) {
@@ -336,18 +420,28 @@
         max-width: 100%;
       }
 
+      h1 {
+        font-size: 28px;
+      }
+
       .card-wrap {
-        height: 420px;
+        height: 460px;
       }
 
       .answer {
         font-size: 24px;
       }
 
+      .common-name-display {
+        font-size: 18px;
+      }
+
       .top-controls,
       .study-controls,
       .quiz-nav,
-      .admin-controls {
+      .admin-controls,
+      .back-actions,
+      .result-links {
         flex-direction: column;
         align-items: stretch;
       }
@@ -355,14 +449,18 @@
       .top-controls button,
       .study-controls button,
       .quiz-nav button,
-      .admin-controls button {
+      .admin-controls button,
+      .back-actions .button-link,
+      .result-links .button-link {
         width: 100%;
       }
 
       .images.two,
       .images.three,
       .quiz-images.two,
-      .quiz-images.three {
+      .quiz-images.three,
+      .result-images.two,
+      .result-images.three {
         grid-template-columns: 1fr;
       }
 
@@ -382,18 +480,24 @@
       .results-score {
         font-size: 32px;
       }
+
+      .card-meta {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Plant ID Flashcards</h1>
+    <h1>RHS PCA2 Plant ID</h1>
     <p class="counter" id="counter"></p>
     <p class="deck-status" id="deckStatus"></p>
 
     <div class="top-controls">
       <button id="studyModeBtn" onclick="switchMode('study')">Study</button>
       <button class="secondary" id="quizModeBtn" onclick="startQuiz()">Quiz</button>
+      <button class="secondary" onclick="shuffleStudyDeck()">Shuffle Study Deck</button>
     </div>
 
     <div class="admin-toggle-row">
@@ -408,6 +512,7 @@
 
   <script src="cards.js"></script>
   <script>
+    const APP_TITLE = "RHS PCA2 Plant ID";
     const builtInCards = Array.isArray(cards) ? cards.map(card => ({ ...card })) : [];
     let activeCards = builtInCards.map(card => ({ ...card }));
     let deckLabel = "Built-in deck";
@@ -436,6 +541,78 @@
 
     function getCurrentCards() {
       return activeCards;
+    }
+
+    function getStoredLastQuizIds() {
+      try {
+        return JSON.parse(localStorage.getItem("plant-id-last-quiz-ids") || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function setStoredLastQuizIds(ids) {
+      try {
+        localStorage.setItem("plant-id-last-quiz-ids", JSON.stringify(ids));
+      } catch {
+      }
+    }
+
+    function parseCardNumber(cardId) {
+      const match = String(cardId || "").match(/card_(\d+)/);
+      return match ? Number(match[1]) : null;
+    }
+
+    function getStudyCounterText() {
+      const currentCards = getCurrentCards();
+      if (!currentCards.length) return "No cards";
+      const card = currentCards[currentIndex];
+      const currentNumber = parseCardNumber(card.id);
+      const firstNumber = parseCardNumber(currentCards[0]?.id);
+      const lastNumber = parseCardNumber(currentCards[currentCards.length - 1]?.id);
+
+      if (currentNumber && firstNumber && lastNumber) {
+        return `Plant ${currentNumber} · Deck range ${firstNumber}–${lastNumber}`;
+      }
+
+      return `Card ${currentIndex + 1} of ${currentCards.length}`;
+    }
+
+    function getLatinName(backText) {
+      return String(backText || "").split("\n")[0].trim();
+    }
+
+    function getCommonName(backText) {
+      const match = String(backText || "").match(/\(([^)]+)\)/);
+      return match ? match[1].trim() : "";
+    }
+
+    function getRhsUrl(card) {
+      return card?.rhs_url ? String(card.rhs_url).trim() : "";
+    }
+
+    function formatLatinForDisplay(backText) {
+      const latin = getLatinName(backText);
+      return `<em>${escapeHtml(latin)}</em>`;
+    }
+
+    function formatCommonNameForDisplay(backText) {
+      const common = getCommonName(backText);
+      return common ? `(${escapeHtml(common)})` : "";
+    }
+
+    function getImageArray(card) {
+      return [
+        card.front_image_url_1,
+        card.front_image_url_2,
+        card.front_image_url_3
+      ].filter(Boolean);
+    }
+
+    function getImageClass(images) {
+      if (images.length === 1) return "one";
+      if (images.length === 2) return "two";
+      return "three";
     }
 
     function updateDeckStatus() {
@@ -490,15 +667,11 @@
             <button class="danger" onclick="deleteCurrentCard()">Delete Current Card</button>
             <button class="secondary" onclick="exportDeck()">Export Deck</button>
             <button class="secondary" onclick="triggerImportDeck()">Import Deck</button>
-            <button class="secondary" onclick="resetToBuiltInDeck()">Reset to Built-in Deck</button>
+            <button class="secondary" onclick="resetToBuiltInDeck()">Reset to built-in deck</button>
           </div>
-          <p class="admin-note">Edits affect the currently loaded deck in this session. Export the deck to keep or share your changes.</p>
+          <p class="admin-note">Edits affect the current session deck. Export the deck to keep or share changes.</p>
         </div>
       `;
-    }
-
-    function formatBotanicalText(text) {
-      return text;
     }
 
     function renderStudyMode() {
@@ -517,31 +690,39 @@
       if (currentIndex >= currentCards.length) currentIndex = 0;
 
       const card = currentCards[currentIndex];
-      const images = [
-        card.front_image_url_1,
-        card.front_image_url_2,
-        card.front_image_url_3
-      ].filter(Boolean);
+      const images = getImageArray(card);
+      const rhsUrl = getRhsUrl(card);
 
-      document.getElementById("counter").textContent =
-        `Card ${currentIndex + 1} of ${currentCards.length}`;
+      document.getElementById("counter").textContent = getStudyCounterText();
 
       document.getElementById("app").innerHTML = `
         <div class="card-wrap">
           <div class="flashcard ${showingAnswer ? 'flipped' : ''}" id="flashcard" onclick="toggleAnswer()">
             <div class="card-face card-front">
-              <div class="images ${images.length === 1 ? 'one' : images.length === 2 ? 'two' : 'three'}">
+              <div class="card-meta">
+                <div class="card-side-label">Front</div>
+                <div class="card-hint">Tap card or button to flip</div>
+              </div>
+              <div class="images ${getImageClass(images)}">
                 ${images.map(url => `<img src="${escapeHtml(url)}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
               </div>
             </div>
+
             <div class="card-face card-back">
-              <div class="answer">${escapeHtml(formatBotanicalText(card.back_text))}</div>
+              <div>
+                <div class="card-side-label" style="display:inline-block; margin-bottom:16px;">Back</div>
+                <div class="answer">${formatLatinForDisplay(card.back_text)}</div>
+                <div class="common-name-display">${formatCommonNameForDisplay(card.back_text)}</div>
+                <div class="back-actions">
+                  ${rhsUrl ? `<a class="button-link secondary" href="${escapeHtml(rhsUrl)}" target="_blank" rel="noopener noreferrer">RHS plant page</a>` : ""}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="study-controls">
-          <button onclick="toggleAnswer()">Flip Card</button>
+          <button onclick="toggleAnswer()">${showingAnswer ? "Show Front" : "Flip Card"}</button>
           <button class="secondary" onclick="prevCard()" ${currentIndex === 0 ? "disabled" : ""}>Previous</button>
           <button class="secondary" onclick="nextCard()" ${currentIndex === currentCards.length - 1 ? "disabled" : ""}>Next</button>
         </div>
@@ -555,29 +736,25 @@
       }
 
       const card = quizCards[currentQuizIndex];
-      const images = [
-        card.front_image_url_1,
-        card.front_image_url_2,
-        card.front_image_url_3
-      ].filter(Boolean);
+      const images = getImageArray(card);
 
       document.getElementById("counter").textContent =
         `Question ${currentQuizIndex + 1} of ${quizCards.length}`;
 
       document.getElementById("app").innerHTML = `
         <div class="quiz-card">
-          <div class="quiz-images ${images.length === 1 ? 'one' : images.length === 2 ? 'two' : 'three'}">
+          <div class="quiz-images ${getImageClass(images)}">
             ${images.map(url => `<img src="${escapeHtml(url)}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
           </div>
 
-          <label class="quiz-label" for="quizAnswer">What is the name of this plant?</label>
+          <label class="quiz-label" for="quizAnswer">What is the Latin name of this plant?</label>
           <input
             id="quizAnswer"
             class="quiz-input"
             type="text"
             value="${escapeHtml(quizAnswers[currentQuizIndex] || "")}"
             oninput="quizAnswers[${currentQuizIndex}] = this.value"
-            placeholder="Enter plant name"
+            placeholder="Enter Latin name"
           >
 
           <div class="quiz-nav">
@@ -601,28 +778,40 @@
       const resultsHtml = quizCards.map((card, index) => {
         const userAnswer = (quizAnswers[index] || "").trim();
         const latinName = getLatinName(card.back_text);
+        const commonName = getCommonName(card.back_text);
+        const rhsUrl = getRhsUrl(card);
         const result = checkQuizAnswer(userAnswer, card.back_text);
+        const images = getImageArray(card);
 
         if (result.isCorrect) score++;
 
         return `
           <div class="result-item">
-            <div class="${result.isCorrect ? 'correct' : 'incorrect'}">
+            <div class="result-topline ${result.isCorrect ? 'correct' : 'incorrect'}">
               ${result.isCorrect ? "Correct" : "Incorrect"}
             </div>
+
+            <div class="result-images ${getImageClass(images)}">
+              ${images.map(url => `<img src="${escapeHtml(url)}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
+            </div>
+
             <div><strong>Your answer:</strong> ${escapeHtml(userAnswer || "(blank)")}</div>
-            <div><strong>Correct Latin name:</strong> ${escapeHtml(latinName)}</div>
-            ${result.note ? `<div style="margin-top:6px; color:#475569;"><em>${escapeHtml(result.note)}</em></div>` : ""}
+            <div><strong>Correct Latin name:</strong> <em>${escapeHtml(latinName)}</em></div>
+            ${commonName ? `<div><strong>Common name:</strong> ${escapeHtml(commonName)}</div>` : ""}
+            ${result.note ? `<div class="result-note"><em>${escapeHtml(result.note)}</em></div>` : ""}
+            <div class="result-links">
+              ${rhsUrl ? `<a class="button-link secondary" href="${escapeHtml(rhsUrl)}" target="_blank" rel="noopener noreferrer">RHS plant page</a>` : ""}
+            </div>
           </div>
         `;
       }).join("");
 
-      document.getElementById("counter").textContent = `Quiz complete`;
+      document.getElementById("counter").textContent = "Quiz complete";
 
       document.getElementById("app").innerHTML = `
         <div class="results-card">
           <div class="results-score">${score} / ${quizCards.length}</div>
-          <div class="results-sub">Marks awarded for correct Latin names only</div>
+          <div class="results-sub">Marks awarded for correctly spelled Latin names only</div>
           ${resultsHtml}
           <div class="study-controls">
             <button onclick="startQuiz()">New Quiz</button>
@@ -657,6 +846,11 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label" for="rhsUrl">RHS plant page URL</label>
+            <input id="rhsUrl" class="form-input" type="url" value="${escapeHtml(editingCard?.rhs_url || "")}" placeholder="https://www.rhs.org.uk/plants/...">
+          </div>
+
+          <div class="form-group">
             <label class="form-label" for="backText">Back Text</label>
             <textarea id="backText" class="form-textarea" placeholder="Botanical name&#10;&#10;(common name)">${escapeHtml(editingCard?.back_text || "")}</textarea>
           </div>
@@ -670,20 +864,11 @@
     }
 
     function normalize(text) {
-      return text
+      return String(text || "")
         .toLowerCase()
         .replace(/[^\w\s×]/g, "")
         .replace(/\s+/g, " ")
         .trim();
-    }
-
-    function getLatinName(backText) {
-      return backText.split("\n")[0].trim();
-    }
-
-    function getCommonName(backText) {
-      const match = backText.match(/\(([^)]+)\)/);
-      return match ? match[1].trim() : "";
     }
 
     function checkQuizAnswer(userAnswer, backText) {
@@ -716,13 +901,36 @@
 
     function startQuiz() {
       const currentCards = getCurrentCards();
-      const shuffled = shuffleArray(currentCards);
-      quizCards = shuffled.slice(0, Math.min(10, shuffled.length));
+      const previousIds = getStoredLastQuizIds();
+
+      const unseenFirst = currentCards.filter(card => !previousIds.includes(card.id));
+      const recentLast = currentCards.filter(card => previousIds.includes(card.id));
+
+      const orderedPool = [
+        ...shuffleArray(unseenFirst),
+        ...shuffleArray(recentLast)
+      ];
+
+      quizCards = orderedPool.slice(0, Math.min(10, orderedPool.length));
       quizAnswers = new Array(quizCards.length).fill("");
       currentQuizIndex = 0;
       showingResults = false;
       showingForm = false;
       mode = "quiz";
+
+      setStoredLastQuizIds(quizCards.map(card => card.id));
+
+      updateModeButtons();
+      renderApp();
+    }
+
+    function shuffleStudyDeck() {
+      activeCards = shuffleArray(activeCards);
+      currentIndex = 0;
+      showingAnswer = false;
+      mode = "study";
+      showingResults = false;
+      showingForm = false;
       updateModeButtons();
       renderApp();
     }
@@ -798,6 +1006,7 @@
       const front1 = document.getElementById("front1").value.trim();
       const front2 = document.getElementById("front2").value.trim();
       const front3 = document.getElementById("front3").value.trim();
+      const rhsUrl = document.getElementById("rhsUrl").value.trim();
       const backText = document.getElementById("backText").value.trim();
 
       if (!backText) {
@@ -810,6 +1019,7 @@
         front_image_url_1: front1,
         front_image_url_2: front2,
         front_image_url_3: front3,
+        rhs_url: rhsUrl,
         back_text: backText
       };
 
@@ -831,7 +1041,7 @@
       if (!currentCards.length) return;
 
       const card = currentCards[currentIndex];
-      const ok = confirm(`Delete this card?\n\n${card.back_text.split("\n")[0]}`);
+      const ok = confirm(`Delete this card?\n\n${getLatinName(card.back_text)}`);
       if (!ok) return;
 
       activeCards = activeCards.filter(item => item.id !== card.id);
@@ -859,7 +1069,17 @@
     }
 
     function triggerImportDeck() {
-      document.getElementById("deckFileInput").click();
+      let input = document.getElementById("deckFileInput");
+      if (!input) {
+        input = document.createElement("input");
+        input.id = "deckFileInput";
+        input.className = "hidden-file-input";
+        input.type = "file";
+        input.accept = ".json,application/json";
+        input.onchange = handleImportDeck;
+        document.body.appendChild(input);
+      }
+      input.click();
     }
 
     function handleImportDeck(event) {
@@ -877,17 +1097,16 @@
             return;
           }
 
-          const cleaned = imported.filter(card =>
-            card &&
-            typeof card === "object" &&
-            typeof card.back_text === "string"
-          ).map((card, index) => ({
-            id: card.id || `imported_${index + 1}`,
-            front_image_url_1: card.front_image_url_1 || "",
-            front_image_url_2: card.front_image_url_2 || "",
-            front_image_url_3: card.front_image_url_3 || "",
-            back_text: card.back_text || ""
-          }));
+          const cleaned = imported
+            .filter(card => card && typeof card === "object" && typeof card.back_text === "string")
+            .map((card, index) => ({
+              id: card.id || `imported_${index + 1}`,
+              front_image_url_1: card.front_image_url_1 || "",
+              front_image_url_2: card.front_image_url_2 || "",
+              front_image_url_3: card.front_image_url_3 || "",
+              rhs_url: card.rhs_url || "",
+              back_text: card.back_text || ""
+            }));
 
           if (!cleaned.length) {
             alert("That file did not contain any usable cards.");
@@ -959,4 +1178,4 @@
     renderApp();
   </script>
 </body>
-</html>      
+</html>
