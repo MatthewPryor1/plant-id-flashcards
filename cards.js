@@ -178,7 +178,7 @@ const cards = [
   {
     "id": "card_69",
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0008363_3209.jpg",
-    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/elbo68917.jpg",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/visi151672.jpg",
     "front_image_url_3": "",
     "rhs_url": "https://www.rhs.org.uk/plants/96238/dahlia-bishop-of-llandaff-%28p%29/details",
     "back_text": "Dahlia 'Bishop of Llandaff'\n\n(dahlia ‘Bishop of Llandaff’)"
@@ -249,7 +249,7 @@ const cards = [
   },
   {
     "id": "card_78",
-    "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/elbo31084.jpg",
+    "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0034357_3647.jpg",
     "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/Web_Use-_TSC0986_3237.jpg",
     "front_image_url_3": "https://apps.rhs.org.uk/plantselectorimages/detail/elbo10176.jpg",
     "rhs_url": "https://www.rhs.org.uk/plants/9334/iris-pseudacorus/details",
