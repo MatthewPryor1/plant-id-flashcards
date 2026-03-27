@@ -74,7 +74,7 @@ const cards = [
   {
     "id": "card_56",
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/elbo33212.jpg",
-    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/sepa09856.jpg",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/elbo67846.jpg",
     "front_image_url_3": "",
     "rhs_url": "https://www.rhs.org.uk/plants/2261/betula-pendula/details",
     "back_text": "Betula pendula\n\n(silver birch)"
