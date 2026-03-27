@@ -17,10 +17,10 @@ const cards = [
   },
   {
     "id": "card_49",
-    "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0005249_1574.jpg",
-    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/eys00056.jpg",
-    "front_image_url_3": "",
-    "rhs_url": "https://www.rhs.org.uk/plants/384/acer-palmatum/details",
+    "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/elbo68052.jpg",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/sepa15932.jpg",
+    "front_image_url_3": "https://apps.rhs.org.uk/plantselectorimages/detail/sepa11442.jpg",
+    "rhs_url": "https://www.rhs.org.uk/plants/225/acer-palmatum/details",
     "back_text": "Acer palmatum\n\n(Japanese maple)"
   },
   {
@@ -361,10 +361,10 @@ const cards = [
   },
   {
     "id": "card_92",
-    "front_image_url_1": "",
+    "front_image_url_1": "https://www.phoenixperennials.com/wp-content/uploads/11606.jpg",
     "front_image_url_2": "",
     "front_image_url_3": "",
-    "rhs_url": "https://www.rhs.org.uk/plants/510747/phlox-paniculata-olympus-(v)/details",
+    "rhs_url": "https://www.rhs.org.uk/plants/510747/phlox-paniculata-olympus-%28v%29/details",
     "back_text": "Phlox paniculata 'Olympus'\n\n(perennial phlox)"
   },
   {
@@ -380,7 +380,7 @@ const cards = [
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/RHS_MAR0015575_1527.JPG",
     "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0035627_8777.jpg",
     "front_image_url_3": "https://apps.rhs.org.uk/plantselectorimages/detail/eyma01239.jpg",
-    "rhs_url": "https://www.rhs.org.uk/plants/13901/primula-vulgaris-(pr-prim)/details",
+    "rhs_url": "https://www.rhs.org.uk/plants/13901/primula-vulgaris-%28pr-prim%29/details",
     "back_text": "Primula vulgaris\n\n(primrose)"
   },
   {
@@ -452,7 +452,7 @@ const cards = [
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/WSYD0012099_5374.jpg",
     "front_image_url_2": "",
     "front_image_url_3": "",
-    "rhs_url": "https://www.rhs.org.uk/plants/340226/symphyotrichum-novi-belgii-fellowship-(d)/details",
+    "rhs_url": "https://www.rhs.org.uk/plants/340226/symphyotrichum-novi-belgii-fellowship-%28d%29/details",
     "back_text": "Symphyotrichum novi-belgii 'Fellowship'\n\n(New York aster)"
   },
   {
