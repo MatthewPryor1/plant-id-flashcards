@@ -361,7 +361,7 @@ const cards = [
   },
   {
     "id": "card_92",
-    "front_image_url_1": "https://www.phoenixperennials.com/wp-content/uploads/11606.jpg",
+    "front_image_url_1": "",
     "front_image_url_2": "",
     "front_image_url_3": "",
     "rhs_url": "https://www.rhs.org.uk/plants/510747/phlox-paniculata-olympus-(v)/details",
