@@ -476,21 +476,6 @@
     `;
   }).join("");
 
-  document.getElementById("counter").textContent = `Quiz complete`;
-
-  document.getElementById("app").innerHTML = `
-    <div class="results-card">
-      <div class="results-score">${score} / ${quizCards.length}</div>
-      <div class="results-sub">Marks awarded for correct Latin names only</div>
-      ${resultsHtml}
-      <div class="study-controls">
-        <button onclick="startQuiz()">New Quiz</button>
-        <button class="secondary" onclick="switchMode('study')">Back to Study</button>
-      </div>
-    </div>
-  `;
-}
-
       document.getElementById("counter").textContent = `Quiz complete`;
 
       document.getElementById("app").innerHTML = `
