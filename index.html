@@ -353,25 +353,41 @@
     }
 
     function renderResults() {
-      let score = 0;
+  let score = 0;
 
-      const resultsHtml = quizCards.map((card, index) => {
-        const userAnswer = (quizAnswers[index] || "").trim();
-        const correctAnswer = card.back_text.split("\n")[0].trim();
-        const isCorrect = normalize(userAnswer) === normalize(correctAnswer);
+  const resultsHtml = quizCards.map((card, index) => {
+    const userAnswer = (quizAnswers[index] || "").trim();
+    const latinName = getLatinName(card.back_text);
+    const result = checkQuizAnswer(userAnswer, card.back_text);
 
-        if (isCorrect) score++;
+    if (result.isCorrect) score++;
 
-        return `
-          <div class="result-item">
-            <div class="${isCorrect ? 'correct' : 'incorrect'}">
-              ${isCorrect ? "Correct" : "Incorrect"}
-            </div>
-            <div><strong>Your answer:</strong> ${escapeHtml(userAnswer || "(blank)")}</div>
-            <div><strong>Correct answer:</strong> ${escapeHtml(correctAnswer)}</div>
-          </div>
-        `;
-      }).join("");
+    return `
+      <div class="result-item">
+        <div class="${result.isCorrect ? 'correct' : 'incorrect'}">
+          ${result.isCorrect ? "Correct" : "Incorrect"}
+        </div>
+        <div><strong>Your answer:</strong> ${escapeHtml(userAnswer || "(blank)")}</div>
+        <div><strong>Correct Latin name:</strong> ${escapeHtml(latinName)}</div>
+        ${result.note ? `<div style="margin-top:6px; color:#475569;"><em>${escapeHtml(result.note)}</em></div>` : ""}
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("counter").textContent = `Quiz complete`;
+
+  document.getElementById("app").innerHTML = `
+    <div class="results-card">
+      <div class="results-score">${score} / ${quizCards.length}</div>
+      <div class="results-sub">Marks awarded for correct Latin names only</div>
+      ${resultsHtml}
+      <div class="study-controls">
+        <button onclick="startQuiz()">New Quiz</button>
+        <button class="secondary" onclick="switchMode('study')">Back to Study</button>
+      </div>
+    </div>
+  `;
+}
 
       document.getElementById("counter").textContent = `Quiz complete`;
 
@@ -389,14 +405,51 @@
     }
 
     function normalize(text) {
-      return text
-        .toLowerCase()
-        .replace(/[^\w\s×]/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s×]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
-    function startQuiz() {
+function getLatinName(backText) {
+  return backText.split("\n")[0].trim();
+}
+
+function getCommonName(backText) {
+  const match = backText.match(/\(([^)]+)\)/);
+  return match ? match[1].trim() : "";
+}
+
+function checkQuizAnswer(userAnswer, backText) {
+  const latinName = getLatinName(backText);
+  const commonName = getCommonName(backText);
+
+  const cleanedUser = normalize(userAnswer);
+  const cleanedLatin = normalize(latinName);
+  const cleanedCommon = normalize(commonName);
+
+  if (cleanedUser === cleanedLatin) {
+    return {
+      isCorrect: true,
+      note: "Correct Latin name"
+    };
+  }
+
+  if (cleanedCommon && cleanedUser === cleanedCommon) {
+    return {
+      isCorrect: false,
+      note: "Common name recognised, but no mark for v1"
+    };
+  }
+
+  return {
+    isCorrect: false,
+    note: ""
+  };
+}
+
+function startQuiz() {
       const shuffled = shuffleArray(cards);
       quizCards = shuffled.slice(0, Math.min(10, shuffled.length));
       quizAnswers = new Array(quizCards.length).fill("");
