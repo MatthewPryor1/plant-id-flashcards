@@ -389,7 +389,7 @@
         <div class="card-wrap">
           <div class="flashcard ${showingAnswer ? 'flipped' : ''}" id="flashcard" onclick="toggleAnswer()">
             <div class="card-face card-front">
-              <div class="images">
+              <div class="images ${images.length === 1 ? 'one' : images.length === 2 ? 'two' : 'three'}">
                 ${images.map(url => `<img src="${url}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
               </div>
             </div>
@@ -425,7 +425,7 @@
 
       document.getElementById("app").innerHTML = `
         <div class="quiz-card">
-          <div class="quiz-images">
+          <div class="quiz-images ${images.length === 1 ? 'one' : images.length === 2 ? 'two' : 'three'}">
             ${images.map(url => `<img src="${url}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
           </div>
 
