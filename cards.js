@@ -154,17 +154,17 @@ const cards = [
   {
     "id": "card_66",
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/RHS_RHS-0007064_6894.JPG",
-    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/RHS_RHS-0007064_6894.JPG",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/RHS-0005307_6894.jpg",
     "front_image_url_3": "",
     "rhs_url": "https://www.rhs.org.uk/plants/30717/cosmos-bipinnatus/details",
     "back_text": "Cosmos bipinnatus\n\n(cosmea)"
   },
-  {
+    {
     "id": "card_67",
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0005133_10215.jpg",
-    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/eyma01256.jpg",
-    "front_image_url_3": "https://apps.rhs.org.uk/plantselectorimages/detail/sepa07398.jpg",
-    "rhs_url": "https://www.rhs.org.uk/plants/5188/cotinus-coggygria/details",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/vaem02042.jpg",
+    "front_image_url_3": "",
+    "rhs_url": "https://www.rhs.org.uk/plants/4552/cotinus-coggygria/details",
     "back_text": "Cotinus coggygria\n\n(smoke tree)"
   },
   {
@@ -172,23 +172,23 @@ const cards = [
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0035898_4166.jpg",
     "front_image_url_2": "https://www.tree-guide.com/images/styles/600x450-copy_/public/common-hawthorn-flower.jpg?itok=iWncYunQ",
     "front_image_url_3": "https://www.tree-guide.com/images/styles/600x450-copy_/public/common-hawthorn-terminal-bud.jpg?itok=0GH_h5cr",
-    "rhs_url": "https://www.rhs.org.uk/plants/5302/crataegus-monogyna/details",
+    "rhs_url": "https://www.rhs.org.uk/plants/4775/crataegus-monogyna/details",
     "back_text": "Crataegus monogyna\n\n(common hawthorn)"
   },
   {
     "id": "card_69",
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0008363_3209.jpg",
-    "front_image_url_2": "",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/elbo68917.jpg",
     "front_image_url_3": "",
-    "rhs_url": "https://www.rhs.org.uk/plants/99144/dahlia-bishop-of-llandaff/details",
+    "rhs_url": "https://www.rhs.org.uk/plants/96238/dahlia-bishop-of-llandaff-%28p%29/details",
     "back_text": "Dahlia 'Bishop of Llandaff'\n\n(dahlia ‘Bishop of Llandaff’)"
   },
   {
     "id": "card_70",
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/RHS_WSYD0004667_8395.JPG",
-    "front_image_url_2": "",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/DaucuscarotaMarkBoltonJuly2024-3.jpg",
     "front_image_url_3": "",
-    "rhs_url": "https://www.rhs.org.uk/plants/5502/daucus-carota/details",
+    "rhs_url": "https://www.rhs.org.uk/plants/24469/daucus-carota/details",
     "back_text": "Daucus carota\n\n(wild carrot)"
   },
   {
@@ -196,7 +196,7 @@ const cards = [
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/_KOS9973.jpg",
     "front_image_url_2": "",
     "front_image_url_3": "",
-    "rhs_url": "https://www.rhs.org.uk/plants/69293/echinacea-purpurea-sensation-pink/details",
+    "rhs_url": "https://www.rhs.org.uk/plants/343473/echinacea-purpurea-sensation-pink-pbr/details",
     "back_text": "Echinacea purpurea 'Sensation Pink'\n\n(purple coneflower)"
   },
   {
@@ -204,31 +204,31 @@ const cards = [
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/elbo13044.jpg",
     "front_image_url_2": "",
     "front_image_url_3": "",
-    "rhs_url": "https://www.rhs.org.uk/plants/314339/eryngium-giganteum-miss-willmott-s-ghost/details",
+    "rhs_url": "https://www.rhs.org.uk/plants/6785/eryngium-giganteum/details",
     "back_text": "Eryngium giganteum 'Miss Willmott's Ghost'\n\n(Miss Willmott’s ghost)"
   },
   {
     "id": "card_73",
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/Web_Use-PUB0028964_769.jpg",
-    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/Web_Use-RHS_Garden_June_2020_009_769.jpg",
-    "front_image_url_3": "",
-    "rhs_url": "https://www.rhs.org.uk/plants/6304/euphorbia-characias-subsp-wulfenii/details",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0034630_5248.jpg",
+    "front_image_url_3": "https://apps.rhs.org.uk/plantselectorimages/detail/RHS-0000672.jpg",
+    "rhs_url": "https://www.rhs.org.uk/plants/99051/euphorbia-characias-subsp-wulfenii/details",
     "back_text": "Euphorbia characias subsp. wulfenii\n\n(Mediterranean spurge)"
   },
   {
     "id": "card_74",
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/rera04132.jpg",
-    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/eys00036.jpg",
-    "front_image_url_3": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0002628_2087.jpg",
-    "rhs_url": "https://www.rhs.org.uk/plants/349876/forsythia-intermedia/details",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/rera04745.jpg",
+    "front_image_url_3": "",
+    "rhs_url": "https://www.rhs.org.uk/plants/94712/forsythia-intermedia/details",
     "back_text": "Forsythia × intermedia\n\n(forsythia)"
   },
   {
     "id": "card_75",
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/Web_Use-RHS_April_2018_101_814.jpg",
-    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/WSYD0011165.jpg",
-    "front_image_url_3": "",
-    "rhs_url": "https://www.rhs.org.uk/plants/7343/fritillaria-meleagris/details",
+    "front_image_url_2": "https://apps.rhs.org.uk/plantselectorimages/detail/Web_Use-NHAB18014_814.jpg",
+    "front_image_url_3": "https://apps.rhs.org.uk/plantselectorimages/detail/Web_Use-NHAB18013_814.jpg",
+    "rhs_url": "https://www.rhs.org.uk/plants/7403/fritillaria-meleagris/details",
     "back_text": "Fritillaria meleagris\n\n(snake’s head fritillary)"
   },
   {
@@ -236,7 +236,7 @@ const cards = [
     "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/WSY0035798_3951.jpg",
     "front_image_url_2": "https://www.tree-guide.com/images/styles/600x450-copy_/public/ginkgo-leaf.jpg?itok=bFc72-Q2",
     "front_image_url_3": "https://www.tree-guide.com/images/styles/600x450-copy_/public/ginkgo-axial-buds.jpg?itok=uav9xOPU",
-    "rhs_url": "https://www.rhs.org.uk/plants/7801/ginkgo-biloba/details",
+    "rhs_url": "https://www.rhs.org.uk/plants/7990/ginkgo-biloba/details",
     "back_text": "Ginkgo biloba\n\n(maidenhair tree)"
   },
   {
