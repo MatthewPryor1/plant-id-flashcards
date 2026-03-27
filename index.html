@@ -242,25 +242,79 @@
     }
 
     .result-item {
-      border-top: 1px solid #e2e8f0;
-      padding: 16px 0;
-    }
+  border-top: 1px solid #e2e8f0;
+  padding: 16px 0;
+}
 
-    .result-item:first-child {
-      border-top: none;
-      padding-top: 0;
-    }
+.result-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
 
-    .correct {
-      color: #15803d;
-      font-weight: 600;
-    }
+.correct {
+  color: #15803d;
+  font-weight: 600;
+}
 
-    .incorrect {
-      color: #b91c1c;
-      font-weight: 600;
-    }
-  </style>
+.incorrect {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  body {
+    padding: 16px;
+  }
+
+  .wrap {
+    max-width: 100%;
+  }
+
+  .card-wrap {
+    height: 420px;
+  }
+
+  .answer {
+    font-size: 24px;
+  }
+
+  .top-controls,
+  .study-controls,
+  .quiz-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .top-controls button,
+  .study-controls button,
+  .quiz-nav button {
+    width: 100%;
+  }
+
+  .images.two,
+  .images.three,
+  .quiz-images.two,
+  .quiz-images.three {
+    grid-template-columns: 1fr;
+  }
+
+  .images.two img,
+  .images.three img,
+  .quiz-images.two img,
+  .quiz-images.three img {
+    max-height: 220px;
+  }
+
+  .quiz-input {
+    font-size: 16px;
+  }
+
+  .results-score {
+    font-size: 32px;
+  }
+}
+</style>
+
 </head>
 <body>
   <div class="wrap">
