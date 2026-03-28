@@ -9,12 +9,27 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #f0f4f8;
+      --text: #1a202c;
+      --muted: #64748b;
+      --muted-2: #475569;
+      --panel: #ffffff;
+      --primary: #3b82f6;
+      --secondary: #64748b;
+      --danger: #dc2626;
+      --border: #e2e8f0;
+      --shadow: 0 10px 28px rgba(0,0,0,0.10);
+      --radius: 18px;
+      --mobile-controls-height: 92px;
+    }
+
     body {
       font-family: system-ui, -apple-system, sans-serif;
       margin: 0;
       padding: 24px;
-      background: #f0f4f8;
-      color: #1a202c;
+      background: var(--bg);
+      color: var(--text);
     }
 
     .wrap {
@@ -26,19 +41,20 @@
       margin: 0 0 8px 0;
       text-align: center;
       font-size: 36px;
+      line-height: 1.1;
     }
 
     .counter {
       text-align: center;
       margin: 0 0 8px 0;
-      color: #475569;
+      color: var(--muted-2);
       font-size: 16px;
     }
 
     .deck-status {
       text-align: center;
       margin: 0 0 18px 0;
-      color: #64748b;
+      color: var(--muted);
       font-size: 14px;
     }
 
@@ -57,7 +73,7 @@
     }
 
     .admin-panel {
-      background: white;
+      background: var(--panel);
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
@@ -78,7 +94,7 @@
 
     .admin-note {
       font-size: 14px;
-      color: #64748b;
+      color: var(--muted);
       margin: 0;
     }
 
@@ -95,6 +111,9 @@
       transform-style: preserve-3d;
       transition: transform 0.7s ease;
       cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: pan-y;
     }
 
     .flashcard.flipped {
@@ -107,10 +126,10 @@
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
-      background: white;
-      border-radius: 18px;
+      background: var(--panel);
+      border-radius: var(--radius);
       padding: 24px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.10);
+      box-shadow: var(--shadow);
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -140,15 +159,17 @@
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #475569;
-      background: #e2e8f0;
+      color: var(--muted-2);
+      background: var(--border);
       padding: 6px 10px;
       border-radius: 999px;
+      white-space: nowrap;
     }
 
     .card-hint {
       font-size: 13px;
-      color: #64748b;
+      color: var(--muted);
+      text-align: right;
     }
 
     .images {
@@ -178,7 +199,7 @@
       object-fit: contain;
       background: #fff;
       display: block;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
     }
 
     .images.one img {
@@ -198,22 +219,26 @@
       padding: 10px 16px;
       border: none;
       border-radius: 10px;
-      background: #3b82f6;
+      background: var(--primary);
       color: white;
       cursor: pointer;
       font-size: 16px;
       text-decoration: none;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       line-height: 1.2;
+      min-height: 44px;
     }
 
     button.secondary,
     .button-link.secondary {
-      background: #64748b;
+      background: var(--secondary);
     }
 
     button.danger {
-      background: #dc2626;
+      background: var(--danger);
     }
 
     button:disabled {
@@ -222,11 +247,16 @@
     }
 
     .study-controls {
-      margin-top: 28px;
+      margin-top: 18px;
       display: flex;
       gap: 12px;
       justify-content: center;
+      align-items: center;
       flex-wrap: wrap;
+    }
+
+    .study-controls .nav-btn {
+      min-width: 112px;
     }
 
     .answer {
@@ -238,7 +268,7 @@
     .common-name-display {
       margin-top: 14px;
       font-size: 20px;
-      color: #64748b;
+      color: var(--muted);
     }
 
     .back-actions {
@@ -252,7 +282,7 @@
     .quiz-card,
     .results-card,
     .form-card {
-      background: white;
+      background: var(--panel);
       border-radius: 16px;
       padding: 24px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
@@ -289,7 +319,7 @@
       object-fit: contain;
       background: #fff;
       display: block;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
     }
 
     .quiz-images.one img {
@@ -331,6 +361,10 @@
       font-family: inherit;
     }
 
+    .quiz-input {
+      autocomplete: off;
+    }
+
     .form-textarea {
       min-height: 120px;
       resize: vertical;
@@ -338,6 +372,31 @@
 
     .form-group {
       margin-bottom: 16px;
+    }
+
+    .quiz-progress-wrap {
+      margin-bottom: 18px;
+    }
+
+    .quiz-progress-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.25s ease;
+    }
+
+    .quiz-progress-text {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
     }
 
     .quiz-nav {
@@ -358,11 +417,11 @@
     .results-sub {
       text-align: center;
       margin-bottom: 24px;
-      color: #475569;
+      color: var(--muted-2);
     }
 
     .result-item {
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid var(--border);
       padding: 18px 0;
     }
 
@@ -387,7 +446,7 @@
 
     .result-note {
       margin-top: 6px;
-      color: #475569;
+      color: var(--muted-2);
       font-size: 14px;
     }
 
@@ -404,16 +463,20 @@
 
     .empty-message {
       text-align: center;
-      color: #64748b;
+      color: var(--muted);
     }
 
     em {
       font-style: italic;
     }
 
+    .mobile-study-controls {
+      display: none;
+    }
+
     @media (max-width: 700px) {
       body {
-        padding: 16px;
+        padding: 16px 16px calc(var(--mobile-controls-height) + env(safe-area-inset-bottom) + 20px) 16px;
       }
 
       .wrap {
@@ -425,7 +488,33 @@
       }
 
       .card-wrap {
-        height: 460px;
+        height: auto;
+        min-height: 0;
+      }
+
+      .card-face {
+        position: relative;
+        min-height: 0;
+        height: auto;
+      }
+
+      .flashcard,
+      .flashcard.flipped {
+        height: auto;
+        min-height: 0;
+        transform: none;
+      }
+
+      .flashcard .card-back {
+        display: none;
+      }
+
+      .flashcard.flipped .card-front {
+        display: none;
+      }
+
+      .flashcard.flipped .card-back {
+        display: flex;
       }
 
       .answer {
@@ -437,7 +526,6 @@
       }
 
       .top-controls,
-      .study-controls,
       .quiz-nav,
       .admin-controls,
       .back-actions,
@@ -447,7 +535,6 @@
       }
 
       .top-controls button,
-      .study-controls button,
       .quiz-nav button,
       .admin-controls button,
       .back-actions .button-link,
@@ -468,7 +555,7 @@
       .images.three img,
       .quiz-images.two img,
       .quiz-images.three img {
-        max-height: 220px;
+        max-height: 260px;
       }
 
       .quiz-input,
@@ -484,6 +571,40 @@
       .card-meta {
         flex-direction: column;
         align-items: flex-start;
+      }
+
+      .card-hint {
+        text-align: left;
+      }
+
+      .study-controls {
+        display: none;
+      }
+
+      .mobile-study-controls {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1fr;
+        gap: 10px;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) 16px;
+        background: rgba(240,244,248,0.96);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-top: 1px solid var(--border);
+        z-index: 1000;
+      }
+
+      .mobile-study-controls button {
+        width: 100%;
+        min-height: 52px;
+        font-size: 15px;
+      }
+
+      .admin-toggle-row {
+        margin-bottom: 16px;
       }
     }
   </style>
@@ -501,18 +622,21 @@
     </div>
 
     <div class="admin-toggle-row">
-      <button class="secondary" onclick="toggleAdminPanel()">
-        <span id="adminToggleText">Admin tools</span>
-      </button>
+      <button class="secondary" onclick="toggleAdminPanel()"> <span id="adminToggleText">Admin tools</span> </button>
     </div>
 
     <div id="adminPanel" style="display:none;"></div>
     <div id="app"></div>
   </div>
 
+  <div id="mobileStudyControls" class="mobile-study-controls" style="display:none;">
+    <button class="secondary" id="mobilePrevBtn" onclick="prevCard()">Previous</button>
+    <button id="mobileFlipBtn" onclick="toggleAnswer()">Flip Card</button>
+    <button class="secondary" id="mobileNextBtn" onclick="nextCard()">Next</button>
+  </div>
+
   <script src="cards.js"></script>
   <script>
-    const APP_TITLE = "RHS PCA2 Plant ID";
     const builtInCards = Array.isArray(cards) ? cards.map(card => ({ ...card })) : [];
     let activeCards = builtInCards.map(card => ({ ...card }));
     let deckLabel = "Built-in deck";
@@ -530,6 +654,13 @@
     let showingForm = false;
     let editingCardId = null;
 
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let suppressCardClick = false;
+
+    const QUIZ_SIZE = 10;
+    const LAST_QUIZ_STORAGE_KEY = "plant-id-last-quiz-ids";
+
     function shuffleArray(array) {
       const copy = [...array];
       for (let i = copy.length - 1; i > 0; i--) {
@@ -545,7 +676,7 @@
 
     function getStoredLastQuizIds() {
       try {
-        return JSON.parse(localStorage.getItem("plant-id-last-quiz-ids") || "[]");
+        return JSON.parse(localStorage.getItem(LAST_QUIZ_STORAGE_KEY) || "[]");
       } catch {
         return [];
       }
@@ -553,13 +684,13 @@
 
     function setStoredLastQuizIds(ids) {
       try {
-        localStorage.setItem("plant-id-last-quiz-ids", JSON.stringify(ids));
+        localStorage.setItem(LAST_QUIZ_STORAGE_KEY, JSON.stringify(ids));
       } catch {
       }
     }
 
     function parseCardNumber(cardId) {
-      const match = String(cardId || "").match(/card_(\d+)/);
+      const match = String(cardId || "").match(/card_(\\d+)/);
       return match ? Number(match[1]) : null;
     }
 
@@ -579,11 +710,11 @@
     }
 
     function getLatinName(backText) {
-      return String(backText || "").split("\n")[0].trim();
+      return String(backText || "").split("\\n")[0].trim();
     }
 
     function getCommonName(backText) {
-      const match = String(backText || "").match(/\(([^)]+)\)/);
+      const match = String(backText || "").match(/\\(([^)]+)\\)/);
       return match ? match[1].trim() : "";
     }
 
@@ -618,6 +749,23 @@
     function updateDeckStatus() {
       const deckStatus = document.getElementById("deckStatus");
       deckStatus.textContent = `${deckLabel} · ${getCurrentCards().length} cards`;
+    }
+
+    function updateMobileStudyControls() {
+      const bar = document.getElementById("mobileStudyControls");
+      const prevBtn = document.getElementById("mobilePrevBtn");
+      const nextBtn = document.getElementById("mobileNextBtn");
+      const flipBtn = document.getElementById("mobileFlipBtn");
+
+      const showBar = mode === "study" && !showingForm && window.innerWidth <= 700;
+      bar.style.display = showBar ? "grid" : "none";
+
+      if (!showBar) return;
+
+      const currentCards = getCurrentCards();
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === currentCards.length - 1;
+      flipBtn.textContent = showingAnswer ? "Show Front" : "Flip Card";
     }
 
     function switchMode(newMode) {
@@ -697,7 +845,7 @@
 
       document.getElementById("app").innerHTML = `
         <div class="card-wrap">
-          <div class="flashcard ${showingAnswer ? 'flipped' : ''}" id="flashcard" onclick="toggleAnswer()">
+          <div class="flashcard ${showingAnswer ? 'flipped' : ''}" id="flashcard">
             <div class="card-face card-front">
               <div class="card-meta">
                 <div class="card-side-label">Front</div>
@@ -722,11 +870,13 @@
         </div>
 
         <div class="study-controls">
-          <button onclick="toggleAnswer()">${showingAnswer ? "Show Front" : "Flip Card"}</button>
-          <button class="secondary" onclick="prevCard()" ${currentIndex === 0 ? "disabled" : ""}>Previous</button>
-          <button class="secondary" onclick="nextCard()" ${currentIndex === currentCards.length - 1 ? "disabled" : ""}>Next</button>
+          <button class="nav-btn secondary" onclick="prevCard()" ${currentIndex === 0 ? "disabled" : ""}>Previous</button>
+          <button class="nav-btn" onclick="toggleAnswer()">${showingAnswer ? "Show Front" : "Flip Card"}</button>
+          <button class="nav-btn secondary" onclick="nextCard()" ${currentIndex === currentCards.length - 1 ? "disabled" : ""}>Next</button>
         </div>
       `;
+
+      attachStudyCardInteractions();
     }
 
     function renderQuizMode() {
@@ -737,12 +887,20 @@
 
       const card = quizCards[currentQuizIndex];
       const images = getImageArray(card);
+      const progressPercent = ((currentQuizIndex + 1) / quizCards.length) * 100;
 
       document.getElementById("counter").textContent =
         `Question ${currentQuizIndex + 1} of ${quizCards.length}`;
 
       document.getElementById("app").innerHTML = `
         <div class="quiz-card">
+          <div class="quiz-progress-wrap">
+            <div class="quiz-progress-bar">
+              <div class="quiz-progress-fill" style="width:${progressPercent}%"></div>
+            </div>
+            <div class="quiz-progress-text">Answered ${currentQuizIndex + 1} of ${quizCards.length}</div>
+          </div>
+
           <div class="quiz-images ${getImageClass(images)}">
             ${images.map(url => `<img src="${escapeHtml(url)}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
           </div>
@@ -755,6 +913,9 @@
             value="${escapeHtml(quizAnswers[currentQuizIndex] || "")}"
             oninput="quizAnswers[${currentQuizIndex}] = this.value"
             placeholder="Enter Latin name"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
           >
 
           <div class="quiz-nav">
@@ -813,7 +974,7 @@
           <div class="results-score">${score} / ${quizCards.length}</div>
           <div class="results-sub">Marks awarded for correctly spelled Latin names only</div>
           ${resultsHtml}
-          <div class="study-controls">
+          <div class="study-controls" style="margin-top:24px;">
             <button onclick="startQuiz()">New Quiz</button>
             <button class="secondary" onclick="switchMode('study')">Back to Study</button>
           </div>
@@ -866,8 +1027,8 @@
     function normalize(text) {
       return String(text || "")
         .toLowerCase()
-        .replace(/[^\w\s×]/g, "")
-        .replace(/\s+/g, " ")
+        .replace(/[^\\w\\s×]/g, "")
+        .replace(/\\s+/g, " ")
         .trim();
     }
 
@@ -911,7 +1072,7 @@
         ...shuffleArray(recentLast)
       ];
 
-      quizCards = orderedPool.slice(0, Math.min(10, orderedPool.length));
+      quizCards = orderedPool.slice(0, Math.min(QUIZ_SIZE, orderedPool.length));
       quizAnswers = new Array(quizCards.length).fill("");
       currentQuizIndex = 0;
       showingResults = false;
@@ -1041,7 +1202,7 @@
       if (!currentCards.length) return;
 
       const card = currentCards[currentIndex];
-      const ok = confirm(`Delete this card?\n\n${getLatinName(card.back_text)}`);
+      const ok = confirm(`Delete this card?\\n\\n${getLatinName(card.back_text)}`);
       if (!ok) return;
 
       activeCards = activeCards.filter(item => item.id !== card.id);
@@ -1156,12 +1317,50 @@
         .replace(/"/g, "&quot;");
     }
 
+    function attachStudyCardInteractions() {
+      const flashcard = document.getElementById("flashcard");
+      if (!flashcard) return;
+
+      flashcard.addEventListener("click", function() {
+        if (suppressCardClick) {
+          suppressCardClick = false;
+          return;
+        }
+        toggleAnswer();
+      });
+
+      flashcard.addEventListener("touchstart", function(e) {
+        const touch = e.changedTouches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      }, { passive: true });
+
+      flashcard.addEventListener("touchend", function(e) {
+        const touch = e.changedTouches[0];
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
+
+        if (absDx > 50 && absDx > absDy) {
+          suppressCardClick = true;
+          if (dx < 0) {
+            nextCard();
+          } else {
+            prevCard();
+          }
+        }
+      }, { passive: true });
+    }
+
     function renderApp() {
       updateDeckStatus();
       renderAdminPanel();
 
       if (showingForm) {
         renderForm();
+        updateMobileStudyControls();
         return;
       }
 
@@ -1170,7 +1369,27 @@
       } else {
         renderQuizMode();
       }
+
+      updateMobileStudyControls();
     }
+
+    document.addEventListener("keydown", function(e) {
+      if (mode !== "study" || showingForm) return;
+      if (e.code === "Space") {
+        const tag = document.activeElement?.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA") return;
+        e.preventDefault();
+        toggleAnswer();
+      }
+      if (e.key === "ArrowRight") {
+        nextCard();
+      }
+      if (e.key === "ArrowLeft") {
+        prevCard();
+      }
+    });
+
+    window.addEventListener("resize", updateMobileStudyControls);
 
     updateDeckStatus();
     updateModeButtons();
