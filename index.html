@@ -361,10 +361,6 @@
       font-family: inherit;
     }
 
-    .quiz-input {
-      autocomplete: off;
-    }
-
     .form-textarea {
       min-height: 120px;
       resize: vertical;
@@ -487,9 +483,42 @@
         font-size: 28px;
       }
 
+      .counter {
+        margin-bottom: 14px;
+      }
+
+      .deck-status {
+        display: none;
+      }
+
+      .top-controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .top-controls button {
+        width: 100%;
+        min-height: 44px;
+        font-size: 14px;
+        padding: 10px 8px;
+      }
+
+      .admin-toggle-row {
+        margin-bottom: 16px;
+      }
+
+      .admin-toggle-row button {
+        min-height: 40px;
+        font-size: 14px;
+        padding: 8px 14px;
+      }
+
       .card-wrap {
         height: auto;
         min-height: 0;
+        margin-top: 12px;
       }
 
       .card-face {
@@ -525,7 +554,6 @@
         font-size: 18px;
       }
 
-      .top-controls,
       .quiz-nav,
       .admin-controls,
       .back-actions,
@@ -534,7 +562,6 @@
         align-items: stretch;
       }
 
-      .top-controls button,
       .quiz-nav button,
       .admin-controls button,
       .back-actions .button-link,
@@ -602,10 +629,6 @@
         min-height: 52px;
         font-size: 15px;
       }
-
-      .admin-toggle-row {
-        margin-bottom: 16px;
-      }
     }
   </style>
 </head>
@@ -618,11 +641,11 @@
     <div class="top-controls">
       <button id="studyModeBtn" onclick="switchMode('study')">Study</button>
       <button class="secondary" id="quizModeBtn" onclick="startQuiz()">Quiz</button>
-      <button class="secondary" onclick="shuffleStudyDeck()">Shuffle Study Deck</button>
+      <button class="secondary" onclick="shuffleStudyDeck()">Shuffle</button>
     </div>
 
     <div class="admin-toggle-row">
-      <button class="secondary" onclick="toggleAdminPanel()"> <span id="adminToggleText">Admin tools</span> </button>
+      <button class="secondary" onclick="toggleAdminPanel()"><span id="adminToggleText">Admin tools</span></button>
     </div>
 
     <div id="adminPanel" style="display:none;"></div>
@@ -690,31 +713,30 @@
     }
 
     function parseCardNumber(cardId) {
-      const match = String(cardId || "").match(/card_(\\d+)/);
+      const match = String(cardId || "").match(/card_(\d+)/);
       return match ? Number(match[1]) : null;
     }
 
-    function getStudyCounterText() {
+    function getPlantPositionText() {
       const currentCards = getCurrentCards();
       if (!currentCards.length) return "No cards";
+
       const card = currentCards[currentIndex];
       const currentNumber = parseCardNumber(card.id);
-      const firstNumber = parseCardNumber(currentCards[0]?.id);
-      const lastNumber = parseCardNumber(currentCards[currentCards.length - 1]?.id);
 
-      if (currentNumber && firstNumber && lastNumber) {
-        return `Plant ${currentNumber} · Deck range ${firstNumber}–${lastNumber}`;
+      if (currentNumber) {
+        return `Plant ${currentNumber} of 110`;
       }
 
       return `Card ${currentIndex + 1} of ${currentCards.length}`;
     }
 
     function getLatinName(backText) {
-      return String(backText || "").split("\\n")[0].trim();
+      return String(backText || "").split("\n")[0].trim();
     }
 
     function getCommonName(backText) {
-      const match = String(backText || "").match(/\\(([^)]+)\\)/);
+      const match = String(backText || "").match(/\(([^)]+)\)/);
       return match ? match[1].trim() : "";
     }
 
@@ -841,7 +863,7 @@
       const images = getImageArray(card);
       const rhsUrl = getRhsUrl(card);
 
-      document.getElementById("counter").textContent = getStudyCounterText();
+      document.getElementById("counter").textContent = getPlantPositionText();
 
       document.getElementById("app").innerHTML = `
         <div class="card-wrap">
@@ -889,8 +911,7 @@
       const images = getImageArray(card);
       const progressPercent = ((currentQuizIndex + 1) / quizCards.length) * 100;
 
-      document.getElementById("counter").textContent =
-        `Question ${currentQuizIndex + 1} of ${quizCards.length}`;
+      document.getElementById("counter").textContent = `Question ${currentQuizIndex + 1} of ${quizCards.length}`;
 
       document.getElementById("app").innerHTML = `
         <div class="quiz-card">
@@ -928,9 +949,6 @@
           </div>
         </div>
       `;
-
-      const input = document.getElementById("quizAnswer");
-      if (input) input.focus();
     }
 
     function renderResults() {
@@ -1027,8 +1045,8 @@
     function normalize(text) {
       return String(text || "")
         .toLowerCase()
-        .replace(/[^\\w\\s×]/g, "")
-        .replace(/\\s+/g, " ")
+        .replace(/[^\w\s×]/g, "")
+        .replace(/\s+/g, " ")
         .trim();
     }
 
@@ -1202,7 +1220,7 @@
       if (!currentCards.length) return;
 
       const card = currentCards[currentIndex];
-      const ok = confirm(`Delete this card?\\n\\n${getLatinName(card.back_text)}`);
+      const ok = confirm(`Delete this card?\n\n${getLatinName(card.back_text)}`);
       if (!ok) return;
 
       activeCards = activeCards.filter(item => item.id !== card.id);
