@@ -523,7 +523,7 @@
       }
 
       .card-face {
-        position: relative;
+        position: absolute;  /* Keep this, don't change to relative */
         min-height: 0;
         height: auto;
       }
@@ -536,16 +536,22 @@
       }
 
       .flashcard .card-back {
-        display: none;
-      }
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
 
-      .flashcard.flipped .card-front {
-        display: none;
-      }
+.flashcard.flipped .card-front {
+  display: none;
+}
 
-      .flashcard.flipped .card-back {
-        display: flex;
-      }
+.flashcard.flipped .card-back {
+  display: flex;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
 
       .answer {
         font-size: 24px;
