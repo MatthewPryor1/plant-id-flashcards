@@ -144,6 +144,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
+      flex-direction: column;
     }
 
     .card-meta {
@@ -879,7 +880,7 @@
             </div>
 
             <div class="card-face card-back">
-              <div>
+               <div style="width: 100%;">
                 <div class="card-side-label" style="display:inline-block; margin-bottom:16px;">Back</div>
                 <div class="answer">${formatLatinForDisplay(card.back_text)}</div>
                 <div class="common-name-display">${formatCommonNameForDisplay(card.back_text)}</div>
