@@ -668,600 +668,760 @@
   </div>
 
   <script src="cards.js"></script>
-  <script>
-    const builtInCards = Array.isArray(cards) ? cards.map(card => ({ ...card })) : [];
-    let activeCards = builtInCards.map(card => ({ ...card }));
-    let deckLabel = "Built-in deck";
+ <script>
+  const builtInCards = Array.isArray(cards) ? cards.map(card => ({ ...card })) : [];
+  let activeCards = builtInCards.map(card => ({ ...card }));
+  let deckLabel = "Built-in deck";
 
-    let mode = "study";
-    let currentIndex = 0;
-    let showingAnswer = false;
+  let mode = "study";
+  let currentIndex = 0;
+  let showingAnswer = false;
 
-    let quizCards = [];
-    let quizAnswers = [];
-    let currentQuizIndex = 0;
-    let showingResults = false;
+  let quizCards = [];
+  let quizAnswers = [];
+  let currentQuizIndex = 0;
+  let showingResults = false;
 
-    let adminPanelOpen = false;
-    let showingForm = false;
-    let editingCardId = null;
+  let adminPanelOpen = false;
+  let showingForm = false;
+  let editingCardId = null;
 
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let suppressCardClick = false;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let suppressCardClick = false;
 
-    const QUIZ_SIZE = 10;
-    const LAST_QUIZ_STORAGE_KEY = "plant-id-last-quiz-ids";
+  const QUIZ_SIZE = 10;
+  const LAST_QUIZ_STORAGE_KEY = "plant-id-last-quiz-ids";
 
-  function renderStudyMode() {
-  const currentCards = getCurrentCards();
-
-  if (!currentCards.length) {
-    document.getElementById("counter").textContent = "No cards";
-    document.getElementById("app").innerHTML = `
-      <div class="results-card">
-        <p class="empty-message">No cards available in this deck.</p>
-      </div>
-    `;
-    return;
+  function shuffleArray(array) {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
   }
 
-  if (currentIndex >= currentCards.length) currentIndex = 0;
+  function getCurrentCards() {
+    return activeCards;
+  }
 
-  const card = currentCards[currentIndex];
-  const images = getImageArray(card);
-  const rhsUrl = getRhsUrl(card);
+  function getStoredLastQuizIds() {
+    try {
+      return JSON.parse(localStorage.getItem(LAST_QUIZ_STORAGE_KEY) || "[]");
+    } catch {
+      return [];
+    }
+  }
 
-  document.getElementById("counter").textContent = getPlantPositionText();
+  function setStoredLastQuizIds(ids) {
+    try {
+      localStorage.setItem(LAST_QUIZ_STORAGE_KEY, JSON.stringify(ids));
+    } catch {
+    }
+  }
 
-  document.getElementById("app").innerHTML = `
-    <div class="card-wrap">
-      <div class="flashcard ${showingAnswer ? 'flipped' : ''}" id="flashcard">
-        <div class="card-face card-front">
-          <div class="card-meta">
-            <div class="card-hint">Tap card or button to flip</div>
-          </div>
+  function parseCardNumber(cardId) {
+    const match = String(cardId || "").match(/card_(\d+)/);
+    return match ? Number(match[1]) : null;
+  }
 
-          <div class="images ${getImageClass(images)}">
-            ${images.map(url => `<img src="${escapeHtml(url)}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
-          </div>
+  function getPlantPositionText() {
+    const currentCards = getCurrentCards();
+    if (!currentCards.length) return "No cards";
+
+    const card = currentCards[currentIndex];
+    const currentNumber = parseCardNumber(card.id);
+
+    if (currentNumber) {
+      return `Plant ${currentNumber} of 110`;
+    }
+
+    return `Card ${currentIndex + 1} of ${currentCards.length}`;
+  }
+
+  function getLatinName(backText) {
+    return String(backText || "").split("\n")[0].trim();
+  }
+
+  function getCommonName(backText) {
+    const match = String(backText || "").match(/\(([^)]+)\)/);
+    return match ? match[1].trim() : "";
+  }
+
+  function getRhsUrl(card) {
+    return card?.rhs_url ? String(card.rhs_url).trim() : "";
+  }
+
+  function formatLatinForDisplay(backText) {
+    const latin = getLatinName(backText);
+    return `<em>${escapeHtml(latin)}</em>`;
+  }
+
+  function formatCommonNameForDisplay(backText) {
+    const common = getCommonName(backText);
+    return common ? `(${escapeHtml(common)})` : "";
+  }
+
+  function getImageArray(card) {
+    return [
+      card.front_image_url_1,
+      card.front_image_url_2,
+      card.front_image_url_3
+    ].filter(Boolean);
+  }
+
+  function getImageClass(images) {
+    if (images.length === 1) return "one";
+    if (images.length === 2) return "two";
+    return "three";
+  }
+
+  function updateDeckStatus() {
+    const deckStatus = document.getElementById("deckStatus");
+    deckStatus.textContent = `${deckLabel} · ${getCurrentCards().length} cards`;
+  }
+
+  function updateMobileStudyControls() {
+    const bar = document.getElementById("mobileStudyControls");
+    const prevBtn = document.getElementById("mobilePrevBtn");
+    const nextBtn = document.getElementById("mobileNextBtn");
+    const flipBtn = document.getElementById("mobileFlipBtn");
+
+    const showBar = mode === "study" && !showingForm && window.innerWidth <= 700;
+    bar.style.display = showBar ? "grid" : "none";
+
+    if (!showBar) return;
+
+    const currentCards = getCurrentCards();
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === currentCards.length - 1;
+    flipBtn.textContent = showingAnswer ? "Show Front" : "Flip Card";
+  }
+
+  function switchMode(newMode) {
+    mode = newMode;
+    showingResults = false;
+    showingForm = false;
+    updateModeButtons();
+    renderApp();
+  }
+
+  function updateModeButtons() {
+    const studyBtn = document.getElementById("studyModeBtn");
+    const quizBtn = document.getElementById("quizModeBtn");
+
+    if (mode === "study") {
+      studyBtn.classList.remove("secondary");
+      quizBtn.classList.add("secondary");
+    } else {
+      quizBtn.classList.remove("secondary");
+      studyBtn.classList.add("secondary");
+    }
+  }
+
+  function toggleAdminPanel() {
+    adminPanelOpen = !adminPanelOpen;
+    renderAdminPanel();
+  }
+
+  function renderAdminPanel() {
+    const panel = document.getElementById("adminPanel");
+    const toggleText = document.getElementById("adminToggleText");
+    toggleText.textContent = adminPanelOpen ? "Hide admin tools" : "Admin tools";
+
+    if (!adminPanelOpen) {
+      panel.style.display = "none";
+      panel.innerHTML = "";
+      return;
+    }
+
+    panel.style.display = "block";
+    panel.innerHTML = `
+      <div class="admin-panel">
+        <h2>Admin tools</h2>
+        <div class="admin-controls">
+          <button onclick="openAddCardForm()">Add Card</button>
+          <button class="secondary" onclick="openEditCurrentCard()">Edit Current Card</button>
+          <button class="danger" onclick="deleteCurrentCard()">Delete Current Card</button>
+          <button class="secondary" onclick="exportDeck()">Export Deck</button>
+          <button class="secondary" onclick="triggerImportDeck()">Import Deck</button>
+          <button class="secondary" onclick="resetToBuiltInDeck()">Reset to built-in deck</button>
         </div>
+        <p class="admin-note">Edits affect the current session deck. Export the deck to keep or share changes.</p>
+      </div>
+    `;
+  }
 
-        <div class="card-face card-back">
-          <div style="width: 100%;">
-            <div class="card-side-label" style="display:inline-block; margin-bottom:16px;">Back</div>
-            <div class="answer">${formatLatinForDisplay(card.back_text)}</div>
-            <div class="common-name-display">${formatCommonNameForDisplay(card.back_text)}</div>
-            <div class="back-actions">
-              ${rhsUrl ? `<a class="button-link secondary" href="${escapeHtml(rhsUrl)}" target="_blank" rel="noopener noreferrer">RHS plant page</a>` : ""}
+  function renderStudyMode() {
+    const currentCards = getCurrentCards();
+
+    if (!currentCards.length) {
+      document.getElementById("counter").textContent = "No cards";
+      document.getElementById("app").innerHTML = `
+        <div class="results-card">
+          <p class="empty-message">No cards available in this deck.</p>
+        </div>
+      `;
+      return;
+    }
+
+    if (currentIndex >= currentCards.length) currentIndex = 0;
+
+    const card = currentCards[currentIndex];
+    const images = getImageArray(card);
+    const rhsUrl = getRhsUrl(card);
+
+    document.getElementById("counter").textContent = getPlantPositionText();
+
+    document.getElementById("app").innerHTML = `
+      <div class="card-wrap">
+        <div class="flashcard ${showingAnswer ? 'flipped' : ''}" id="flashcard">
+          <div class="card-face card-front">
+            <div class="card-meta">
+              <div class="card-hint">Tap card or button to flip</div>
+            </div>
+
+            <div class="images ${getImageClass(images)}">
+              ${images.map(url => `<img src="${escapeHtml(url)}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
+            </div>
+          </div>
+
+          <div class="card-face card-back">
+            <div style="width: 100%;">
+              <div class="card-side-label" style="display:inline-block; margin-bottom:16px;">Back</div>
+              <div class="answer">${formatLatinForDisplay(card.back_text)}</div>
+              <div class="common-name-display">${formatCommonNameForDisplay(card.back_text)}</div>
+              <div class="back-actions">
+                ${rhsUrl ? `<a class="button-link secondary" href="${escapeHtml(rhsUrl)}" target="_blank" rel="noopener noreferrer">RHS plant page</a>` : ""}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="study-controls">
-      <button class="nav-btn secondary" onclick="prevCard()" ${currentIndex === 0 ? "disabled" : ""}>Previous</button>
-      <button class="nav-btn" onclick="toggleAnswer()">${showingAnswer ? "Show Front" : "Flip Card"}</button>
-      <button class="nav-btn secondary" onclick="nextCard()" ${currentIndex === currentCards.length - 1 ? "disabled" : ""}>Next</button>
-    </div>
-  `;
+      <div class="study-controls">
+        <button class="nav-btn secondary" onclick="prevCard()" ${currentIndex === 0 ? "disabled" : ""}>Previous</button>
+        <button class="nav-btn" onclick="toggleAnswer()">${showingAnswer ? "Show Front" : "Flip Card"}</button>
+        <button class="nav-btn secondary" onclick="nextCard()" ${currentIndex === currentCards.length - 1 ? "disabled" : ""}>Next</button>
+      </div>
+    `;
 
-  attachStudyCardInteractions();
-}
+    attachStudyCardInteractions();
+  }
 
-    function renderQuizMode() {
-      if (showingResults) {
-        renderResults();
-        return;
-      }
+  function renderQuizMode() {
+    if (showingResults) {
+      renderResults();
+      return;
+    }
 
-      const card = quizCards[currentQuizIndex];
+    const card = quizCards[currentQuizIndex];
+    const images = getImageArray(card);
+    const progressPercent = ((currentQuizIndex + 1) / quizCards.length) * 100;
+
+    document.getElementById("counter").textContent = `Question ${currentQuizIndex + 1} of ${quizCards.length}`;
+
+    document.getElementById("app").innerHTML = `
+      <div class="quiz-card">
+        <div class="quiz-progress-wrap">
+          <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" style="width:${progressPercent}%"></div>
+          </div>
+          <div class="quiz-progress-text">Answered ${currentQuizIndex + 1} of ${quizCards.length}</div>
+        </div>
+
+        <div class="quiz-images ${getImageClass(images)}">
+          ${images.map(url => `<img src="${escapeHtml(url)}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
+        </div>
+
+        <label class="quiz-label" for="quizAnswer">What is the Latin name of this plant?</label>
+        <input
+          id="quizAnswer"
+          class="quiz-input"
+          type="text"
+          value="${escapeHtml(quizAnswers[currentQuizIndex] || "")}"
+          oninput="quizAnswers[${currentQuizIndex}] = this.value"
+          placeholder="Enter Latin name"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        >
+
+        <div class="quiz-nav">
+          <button class="secondary" onclick="prevQuizQuestion()" ${currentQuizIndex === 0 ? "disabled" : ""}>Previous</button>
+          ${
+            currentQuizIndex === quizCards.length - 1
+              ? `<button onclick="submitQuiz()">Submit Quiz</button>`
+              : `<button onclick="nextQuizQuestion()">Next</button>`
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  function renderResults() {
+    let score = 0;
+
+    const resultsHtml = quizCards.map((card, index) => {
+      const userAnswer = (quizAnswers[index] || "").trim();
+      const latinName = getLatinName(card.back_text);
+      const commonName = getCommonName(card.back_text);
+      const rhsUrl = getRhsUrl(card);
+      const result = checkQuizAnswer(userAnswer, card.back_text);
       const images = getImageArray(card);
-      const progressPercent = ((currentQuizIndex + 1) / quizCards.length) * 100;
 
-      document.getElementById("counter").textContent = `Question ${currentQuizIndex + 1} of ${quizCards.length}`;
+      if (result.isCorrect) score++;
 
-      document.getElementById("app").innerHTML = `
-        <div class="quiz-card">
-          <div class="quiz-progress-wrap">
-            <div class="quiz-progress-bar">
-              <div class="quiz-progress-fill" style="width:${progressPercent}%"></div>
-            </div>
-            <div class="quiz-progress-text">Answered ${currentQuizIndex + 1} of ${quizCards.length}</div>
+      return `
+        <div class="result-item">
+          <div class="result-topline ${result.isCorrect ? 'correct' : 'incorrect'}">
+            ${result.isCorrect ? "Correct" : "Incorrect"}
           </div>
 
-          <div class="quiz-images ${getImageClass(images)}">
+          <div class="result-images ${getImageClass(images)}">
             ${images.map(url => `<img src="${escapeHtml(url)}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
           </div>
 
-          <label class="quiz-label" for="quizAnswer">What is the Latin name of this plant?</label>
-          <input
-            id="quizAnswer"
-            class="quiz-input"
-            type="text"
-            value="${escapeHtml(quizAnswers[currentQuizIndex] || "")}"
-            oninput="quizAnswers[${currentQuizIndex}] = this.value"
-            placeholder="Enter Latin name"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-          >
-
-          <div class="quiz-nav">
-            <button class="secondary" onclick="prevQuizQuestion()" ${currentQuizIndex === 0 ? "disabled" : ""}>Previous</button>
-            ${
-              currentQuizIndex === quizCards.length - 1
-                ? `<button onclick="submitQuiz()">Submit Quiz</button>`
-                : `<button onclick="nextQuizQuestion()">Next</button>`
-            }
+          <div><strong>Your answer:</strong> ${escapeHtml(userAnswer || "(blank)")}</div>
+          <div><strong>Correct Latin name:</strong> <em>${escapeHtml(latinName)}</em></div>
+          ${commonName ? `<div><strong>Common name:</strong> ${escapeHtml(commonName)}</div>` : ""}
+          ${result.note ? `<div class="result-note"><em>${escapeHtml(result.note)}</em></div>` : ""}
+          <div class="result-links">
+            ${rhsUrl ? `<a class="button-link secondary" href="${escapeHtml(rhsUrl)}" target="_blank" rel="noopener noreferrer">RHS plant page</a>` : ""}
           </div>
         </div>
       `;
-    }
+    }).join("");
 
-    function renderResults() {
-      let score = 0;
+    document.getElementById("counter").textContent = "Quiz complete";
 
-      const resultsHtml = quizCards.map((card, index) => {
-        const userAnswer = (quizAnswers[index] || "").trim();
-        const latinName = getLatinName(card.back_text);
-        const commonName = getCommonName(card.back_text);
-        const rhsUrl = getRhsUrl(card);
-        const result = checkQuizAnswer(userAnswer, card.back_text);
-        const images = getImageArray(card);
-
-        if (result.isCorrect) score++;
-
-        return `
-          <div class="result-item">
-            <div class="result-topline ${result.isCorrect ? 'correct' : 'incorrect'}">
-              ${result.isCorrect ? "Correct" : "Incorrect"}
-            </div>
-
-            <div class="result-images ${getImageClass(images)}">
-              ${images.map(url => `<img src="${escapeHtml(url)}" alt="Plant image" onerror="this.style.display='none'">`).join("")}
-            </div>
-
-            <div><strong>Your answer:</strong> ${escapeHtml(userAnswer || "(blank)")}</div>
-            <div><strong>Correct Latin name:</strong> <em>${escapeHtml(latinName)}</em></div>
-            ${commonName ? `<div><strong>Common name:</strong> ${escapeHtml(commonName)}</div>` : ""}
-            ${result.note ? `<div class="result-note"><em>${escapeHtml(result.note)}</em></div>` : ""}
-            <div class="result-links">
-              ${rhsUrl ? `<a class="button-link secondary" href="${escapeHtml(rhsUrl)}" target="_blank" rel="noopener noreferrer">RHS plant page</a>` : ""}
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      document.getElementById("counter").textContent = "Quiz complete";
-
-      document.getElementById("app").innerHTML = `
-        <div class="results-card">
-          <div class="results-score">${score} / ${quizCards.length}</div>
-          <div class="results-sub">Marks awarded for correctly spelled Latin names only</div>
-          ${resultsHtml}
-          <div class="study-controls" style="margin-top:24px;">
-            <button onclick="startQuiz()">New Quiz</button>
-            <button class="secondary" onclick="switchMode('study')">Back to Study</button>
-          </div>
+    document.getElementById("app").innerHTML = `
+      <div class="results-card">
+        <div class="results-score">${score} / ${quizCards.length}</div>
+        <div class="results-sub">Marks awarded for correctly spelled Latin names only</div>
+        ${resultsHtml}
+        <div class="study-controls" style="margin-top:24px;">
+          <button onclick="startQuiz()">New Quiz</button>
+          <button class="secondary" onclick="switchMode('study')">Back to Study</button>
         </div>
-      `;
-    }
+      </div>
+    `;
+  }
 
-    function renderForm() {
-      const currentCards = getCurrentCards();
-      const editingCard = editingCardId ? currentCards.find(card => card.id === editingCardId) : null;
-      const isEditing = !!editingCard;
+  function renderForm() {
+    const currentCards = getCurrentCards();
+    const editingCard = editingCardId ? currentCards.find(card => card.id === editingCardId) : null;
+    const isEditing = !!editingCard;
 
-      document.getElementById("counter").textContent = isEditing ? "Edit card" : "Add card";
+    document.getElementById("counter").textContent = isEditing ? "Edit card" : "Add card";
 
-      document.getElementById("app").innerHTML = `
-        <div class="form-card">
-          <div class="form-group">
-            <label class="form-label" for="front1">Front Image 1</label>
-            <input id="front1" class="form-input" type="url" value="${escapeHtml(editingCard?.front_image_url_1 || "")}" placeholder="https://...">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="front2">Front Image 2</label>
-            <input id="front2" class="form-input" type="url" value="${escapeHtml(editingCard?.front_image_url_2 || "")}" placeholder="https://...">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="front3">Front Image 3</label>
-            <input id="front3" class="form-input" type="url" value="${escapeHtml(editingCard?.front_image_url_3 || "")}" placeholder="https://...">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="rhsUrl">RHS plant page URL</label>
-            <input id="rhsUrl" class="form-input" type="url" value="${escapeHtml(editingCard?.rhs_url || "")}" placeholder="https://www.rhs.org.uk/plants/...">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="backText">Back Text</label>
-            <textarea id="backText" class="form-textarea" placeholder="Botanical name&#10;&#10;(common name)">${escapeHtml(editingCard?.back_text || "")}</textarea>
-          </div>
-
-          <div class="study-controls">
-            <button onclick="saveCardForm()">${isEditing ? "Save Changes" : "Add Card"}</button>
-            <button class="secondary" onclick="cancelCardForm()">Cancel</button>
-          </div>
+    document.getElementById("app").innerHTML = `
+      <div class="form-card">
+        <div class="form-group">
+          <label class="form-label" for="front1">Front Image 1</label>
+          <input id="front1" class="form-input" type="url" value="${escapeHtml(editingCard?.front_image_url_1 || "")}" placeholder="https://...">
         </div>
-      `;
+
+        <div class="form-group">
+          <label class="form-label" for="front2">Front Image 2</label>
+          <input id="front2" class="form-input" type="url" value="${escapeHtml(editingCard?.front_image_url_2 || "")}" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="front3">Front Image 3</label>
+          <input id="front3" class="form-input" type="url" value="${escapeHtml(editingCard?.front_image_url_3 || "")}" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="rhsUrl">RHS plant page URL</label>
+          <input id="rhsUrl" class="form-input" type="url" value="${escapeHtml(editingCard?.rhs_url || "")}" placeholder="https://www.rhs.org.uk/plants/...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="backText">Back Text</label>
+          <textarea id="backText" class="form-textarea" placeholder="Botanical name&#10;&#10;(common name)">${escapeHtml(editingCard?.back_text || "")}</textarea>
+        </div>
+
+        <div class="study-controls">
+          <button onclick="saveCardForm()">${isEditing ? "Save Changes" : "Add Card"}</button>
+          <button class="secondary" onclick="cancelCardForm()">Cancel</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function normalize(text) {
+    return String(text || "")
+      .toLowerCase()
+      .replace(/[^\w\s×]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function checkQuizAnswer(userAnswer, backText) {
+    const latinName = getLatinName(backText);
+    const commonName = getCommonName(backText);
+
+    const cleanedUser = normalize(userAnswer);
+    const cleanedLatin = normalize(latinName);
+    const cleanedCommon = normalize(commonName);
+
+    if (cleanedUser === cleanedLatin) {
+      return {
+        isCorrect: true,
+        note: "Correct Latin name"
+      };
     }
 
-    function normalize(text) {
-      return String(text || "")
-        .toLowerCase()
-        .replace(/[^\w\s×]/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    function checkQuizAnswer(userAnswer, backText) {
-      const latinName = getLatinName(backText);
-      const commonName = getCommonName(backText);
-
-      const cleanedUser = normalize(userAnswer);
-      const cleanedLatin = normalize(latinName);
-      const cleanedCommon = normalize(commonName);
-
-      if (cleanedUser === cleanedLatin) {
-        return {
-          isCorrect: true,
-          note: "Correct Latin name"
-        };
-      }
-
-      if (cleanedCommon && cleanedUser === cleanedCommon) {
-        return {
-          isCorrect: false,
-          note: "Common name recognised, but no mark for v1"
-        };
-      }
-
+    if (cleanedCommon && cleanedUser === cleanedCommon) {
       return {
         isCorrect: false,
-        note: ""
+        note: "Common name recognised, but no mark for v1"
       };
     }
 
-    function startQuiz() {
-      const currentCards = getCurrentCards();
-      const previousIds = getStoredLastQuizIds();
+    return {
+      isCorrect: false,
+      note: ""
+    };
+  }
 
-      const unseenFirst = currentCards.filter(card => !previousIds.includes(card.id));
-      const recentLast = currentCards.filter(card => previousIds.includes(card.id));
+  function startQuiz() {
+    const currentCards = getCurrentCards();
+    const previousIds = getStoredLastQuizIds();
 
-      const orderedPool = [
-        ...shuffleArray(unseenFirst),
-        ...shuffleArray(recentLast)
-      ];
+    const unseenFirst = currentCards.filter(card => !previousIds.includes(card.id));
+    const recentLast = currentCards.filter(card => previousIds.includes(card.id));
 
-      quizCards = orderedPool.slice(0, Math.min(QUIZ_SIZE, orderedPool.length));
-      quizAnswers = new Array(quizCards.length).fill("");
-      currentQuizIndex = 0;
-      showingResults = false;
-      showingForm = false;
-      mode = "quiz";
+    const orderedPool = [
+      ...shuffleArray(unseenFirst),
+      ...shuffleArray(recentLast)
+    ];
 
-      setStoredLastQuizIds(quizCards.map(card => card.id));
+    quizCards = orderedPool.slice(0, Math.min(QUIZ_SIZE, orderedPool.length));
+    quizAnswers = new Array(quizCards.length).fill("");
+    currentQuizIndex = 0;
+    showingResults = false;
+    showingForm = false;
+    mode = "quiz";
 
-      updateModeButtons();
+    setStoredLastQuizIds(quizCards.map(card => card.id));
+
+    updateModeButtons();
+    renderApp();
+  }
+
+  function shuffleStudyDeck() {
+    activeCards = shuffleArray(activeCards);
+    currentIndex = 0;
+    showingAnswer = false;
+    mode = "study";
+    showingResults = false;
+    showingForm = false;
+    updateModeButtons();
+    renderApp();
+  }
+
+  function nextQuizQuestion() {
+    if (currentQuizIndex < quizCards.length - 1) {
+      currentQuizIndex++;
       renderApp();
     }
+  }
 
-    function shuffleStudyDeck() {
-      activeCards = shuffleArray(activeCards);
-      currentIndex = 0;
-      showingAnswer = false;
-      mode = "study";
-      showingResults = false;
-      showingForm = false;
-      updateModeButtons();
+  function prevQuizQuestion() {
+    if (currentQuizIndex > 0) {
+      currentQuizIndex--;
       renderApp();
     }
+  }
 
-    function nextQuizQuestion() {
-      if (currentQuizIndex < quizCards.length - 1) {
-        currentQuizIndex++;
-        renderApp();
-      }
-    }
+  function submitQuiz() {
+    showingResults = true;
+    renderApp();
+  }
 
-    function prevQuizQuestion() {
-      if (currentQuizIndex > 0) {
-        currentQuizIndex--;
-        renderApp();
-      }
-    }
+  function toggleAnswer() {
+    showingAnswer = !showingAnswer;
+    renderApp();
+  }
 
-    function submitQuiz() {
-      showingResults = true;
-      renderApp();
-    }
-
-    function toggleAnswer() {
-      showingAnswer = !showingAnswer;
-      renderApp();
-    }
-
-    function prevCard() {
-      if (currentIndex > 0) {
-        currentIndex--;
-        showingAnswer = false;
-        renderApp();
-      }
-    }
-
-    function nextCard() {
-      const currentCards = getCurrentCards();
-      if (currentIndex < currentCards.length - 1) {
-        currentIndex++;
-        showingAnswer = false;
-        renderApp();
-      }
-    }
-
-    function openAddCardForm() {
-      mode = "study";
-      showingResults = false;
-      showingForm = true;
-      editingCardId = null;
-      updateModeButtons();
-      renderApp();
-    }
-
-    function openEditCurrentCard() {
-      const currentCards = getCurrentCards();
-      if (!currentCards.length) return;
-      mode = "study";
-      showingResults = false;
-      showingForm = true;
-      editingCardId = currentCards[currentIndex].id;
-      updateModeButtons();
-      renderApp();
-    }
-
-    function cancelCardForm() {
-      showingForm = false;
-      editingCardId = null;
-      renderApp();
-    }
-
-    function saveCardForm() {
-      const front1 = document.getElementById("front1").value.trim();
-      const front2 = document.getElementById("front2").value.trim();
-      const front3 = document.getElementById("front3").value.trim();
-      const rhsUrl = document.getElementById("rhsUrl").value.trim();
-      const backText = document.getElementById("backText").value.trim();
-
-      if (!backText) {
-        alert("Back Text is required.");
-        return;
-      }
-
-      const newCard = {
-        id: editingCardId || `card_${Date.now()}`,
-        front_image_url_1: front1,
-        front_image_url_2: front2,
-        front_image_url_3: front3,
-        rhs_url: rhsUrl,
-        back_text: backText
-      };
-
-      if (editingCardId) {
-        activeCards = activeCards.map(card => card.id === editingCardId ? newCard : card);
-      } else {
-        activeCards.push(newCard);
-        currentIndex = activeCards.length - 1;
-      }
-
-      showingForm = false;
-      editingCardId = null;
+  function prevCard() {
+    if (currentIndex > 0) {
+      currentIndex--;
       showingAnswer = false;
       renderApp();
     }
+  }
 
-    function deleteCurrentCard() {
-      const currentCards = getCurrentCards();
-      if (!currentCards.length) return;
-
-      const card = currentCards[currentIndex];
-      const ok = confirm(`Delete this card?\n\n${getLatinName(card.back_text)}`);
-      if (!ok) return;
-
-      activeCards = activeCards.filter(item => item.id !== card.id);
-
-      if (currentIndex >= activeCards.length) {
-        currentIndex = Math.max(0, activeCards.length - 1);
-      }
-
+  function nextCard() {
+    const currentCards = getCurrentCards();
+    if (currentIndex < currentCards.length - 1) {
+      currentIndex++;
       showingAnswer = false;
-      showingForm = false;
       renderApp();
     }
+  }
 
-    function exportDeck() {
-      const currentCards = getCurrentCards();
-      const blob = new Blob([JSON.stringify(currentCards, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "plant-id-deck.json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+  function openAddCardForm() {
+    mode = "study";
+    showingResults = false;
+    showingForm = true;
+    editingCardId = null;
+    updateModeButtons();
+    renderApp();
+  }
+
+  function openEditCurrentCard() {
+    const currentCards = getCurrentCards();
+    if (!currentCards.length) return;
+    mode = "study";
+    showingResults = false;
+    showingForm = true;
+    editingCardId = currentCards[currentIndex].id;
+    updateModeButtons();
+    renderApp();
+  }
+
+  function cancelCardForm() {
+    showingForm = false;
+    editingCardId = null;
+    renderApp();
+  }
+
+  function saveCardForm() {
+    const front1 = document.getElementById("front1").value.trim();
+    const front2 = document.getElementById("front2").value.trim();
+    const front3 = document.getElementById("front3").value.trim();
+    const rhsUrl = document.getElementById("rhsUrl").value.trim();
+    const backText = document.getElementById("backText").value.trim();
+
+    if (!backText) {
+      alert("Back Text is required.");
+      return;
     }
 
-    function triggerImportDeck() {
-      let input = document.getElementById("deckFileInput");
-      if (!input) {
-        input = document.createElement("input");
-        input.id = "deckFileInput";
-        input.className = "hidden-file-input";
-        input.type = "file";
-        input.accept = ".json,application/json";
-        input.onchange = handleImportDeck;
-        document.body.appendChild(input);
-      }
-      input.click();
+    const newCard = {
+      id: editingCardId || `card_${Date.now()}`,
+      front_image_url_1: front1,
+      front_image_url_2: front2,
+      front_image_url_3: front3,
+      rhs_url: rhsUrl,
+      back_text: backText
+    };
+
+    if (editingCardId) {
+      activeCards = activeCards.map(card => card.id === editingCardId ? newCard : card);
+    } else {
+      activeCards.push(newCard);
+      currentIndex = activeCards.length - 1;
     }
 
-    function handleImportDeck(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+    showingForm = false;
+    editingCardId = null;
+    showingAnswer = false;
+    renderApp();
+  }
 
-      const reader = new FileReader();
+  function deleteCurrentCard() {
+    const currentCards = getCurrentCards();
+    if (!currentCards.length) return;
 
-      reader.onload = function(e) {
-        try {
-          const imported = JSON.parse(e.target.result);
+    const card = currentCards[currentIndex];
+    const ok = confirm(`Delete this card?\n\n${getLatinName(card.back_text)}`);
+    if (!ok) return;
 
-          if (!Array.isArray(imported)) {
-            alert("That file does not contain a valid deck.");
-            return;
-          }
+    activeCards = activeCards.filter(item => item.id !== card.id);
 
-          const cleaned = imported
-            .filter(card => card && typeof card === "object" && typeof card.back_text === "string")
-            .map((card, index) => ({
-              id: card.id || `imported_${index + 1}`,
-              front_image_url_1: card.front_image_url_1 || "",
-              front_image_url_2: card.front_image_url_2 || "",
-              front_image_url_3: card.front_image_url_3 || "",
-              rhs_url: card.rhs_url || "",
-              back_text: card.back_text || ""
-            }));
-
-          if (!cleaned.length) {
-            alert("That file did not contain any usable cards.");
-            return;
-          }
-
-          activeCards = cleaned;
-          deckLabel = `Imported deck: ${file.name}`;
-          currentIndex = 0;
-          showingAnswer = false;
-          showingResults = false;
-          showingForm = false;
-          editingCardId = null;
-          mode = "study";
-          updateDeckStatus();
-          updateModeButtons();
-          renderApp();
-        } catch (error) {
-          alert("Could not read that deck file.");
-        } finally {
-          event.target.value = "";
-        }
-      };
-
-      reader.readAsText(file);
+    if (currentIndex >= activeCards.length) {
+      currentIndex = Math.max(0, activeCards.length - 1);
     }
 
-    function resetToBuiltInDeck() {
-      activeCards = builtInCards.map(card => ({ ...card }));
-      deckLabel = "Built-in deck";
-      currentIndex = 0;
-      showingAnswer = false;
-      showingResults = false;
-      showingForm = false;
-      editingCardId = null;
-      mode = "study";
-      updateDeckStatus();
-      updateModeButtons();
-      renderApp();
+    showingAnswer = false;
+    showingForm = false;
+    renderApp();
+  }
+
+  function exportDeck() {
+    const currentCards = getCurrentCards();
+    const blob = new Blob([JSON.stringify(currentCards, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "plant-id-deck.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function triggerImportDeck() {
+    let input = document.getElementById("deckFileInput");
+    if (!input) {
+      input = document.createElement("input");
+      input.id = "deckFileInput";
+      input.className = "hidden-file-input";
+      input.type = "file";
+      input.accept = ".json,application/json";
+      input.onchange = handleImportDeck;
+      document.body.appendChild(input);
     }
+    input.click();
+  }
 
-    function escapeHtml(text) {
-      return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
+  function handleImportDeck(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-    function attachStudyCardInteractions() {
-      const flashcard = document.getElementById("flashcard");
-      if (!flashcard) return;
+    const reader = new FileReader();
 
-      flashcard.addEventListener("click", function() {
-        if (suppressCardClick) {
-          suppressCardClick = false;
+    reader.onload = function(e) {
+      try {
+        const imported = JSON.parse(e.target.result);
+
+        if (!Array.isArray(imported)) {
+          alert("That file does not contain a valid deck.");
           return;
         }
-        toggleAnswer();
-      });
 
-      flashcard.addEventListener("touchstart", function(e) {
-        const touch = e.changedTouches[0];
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-      }, { passive: true });
+        const cleaned = imported
+          .filter(card => card && typeof card === "object" && typeof card.back_text === "string")
+          .map((card, index) => ({
+            id: card.id || `imported_${index + 1}`,
+            front_image_url_1: card.front_image_url_1 || "",
+            front_image_url_2: card.front_image_url_2 || "",
+            front_image_url_3: card.front_image_url_3 || "",
+            rhs_url: card.rhs_url || "",
+            back_text: card.back_text || ""
+          }));
 
-      flashcard.addEventListener("touchend", function(e) {
-        const touch = e.changedTouches[0];
-        const dx = touch.clientX - touchStartX;
-        const dy = touch.clientY - touchStartY;
-
-        const absDx = Math.abs(dx);
-        const absDy = Math.abs(dy);
-
-        if (absDx > 50 && absDx > absDy) {
-          suppressCardClick = true;
-          if (dx < 0) {
-            nextCard();
-          } else {
-            prevCard();
-          }
+        if (!cleaned.length) {
+          alert("That file did not contain any usable cards.");
+          return;
         }
-      }, { passive: true });
-    }
 
-    function renderApp() {
-      updateDeckStatus();
-      renderAdminPanel();
-
-      if (showingForm) {
-        renderForm();
-        updateMobileStudyControls();
-        return;
+        activeCards = cleaned;
+        deckLabel = `Imported deck: ${file.name}`;
+        currentIndex = 0;
+        showingAnswer = false;
+        showingResults = false;
+        showingForm = false;
+        editingCardId = null;
+        mode = "study";
+        updateDeckStatus();
+        updateModeButtons();
+        renderApp();
+      } catch (error) {
+        alert("Could not read that deck file.");
+      } finally {
+        event.target.value = "";
       }
+    };
 
-      if (mode === "study") {
-        renderStudyMode();
-      } else {
-        renderQuizMode();
-      }
+    reader.readAsText(file);
+  }
 
-      updateMobileStudyControls();
-    }
-
-    document.addEventListener("keydown", function(e) {
-      if (mode !== "study" || showingForm) return;
-      if (e.code === "Space") {
-        const tag = document.activeElement?.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA") return;
-        e.preventDefault();
-        toggleAnswer();
-      }
-      if (e.key === "ArrowRight") {
-        nextCard();
-      }
-      if (e.key === "ArrowLeft") {
-        prevCard();
-      }
-    });
-
-    window.addEventListener("resize", updateMobileStudyControls);
-
+  function resetToBuiltInDeck() {
+    activeCards = builtInCards.map(card => ({ ...card }));
+    deckLabel = "Built-in deck";
+    currentIndex = 0;
+    showingAnswer = false;
+    showingResults = false;
+    showingForm = false;
+    editingCardId = null;
+    mode = "study";
     updateDeckStatus();
     updateModeButtons();
-    renderAdminPanel();
     renderApp();
-  </script>
+  }
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function attachStudyCardInteractions() {
+    const flashcard = document.getElementById("flashcard");
+    if (!flashcard) return;
+
+    flashcard.addEventListener("click", function() {
+      if (suppressCardClick) {
+        suppressCardClick = false;
+        return;
+      }
+      toggleAnswer();
+    });
+
+    flashcard.addEventListener("touchstart", function(e) {
+      const touch = e.changedTouches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+
+    flashcard.addEventListener("touchend", function(e) {
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+
+      if (absDx > 50 && absDx > absDy) {
+        suppressCardClick = true;
+        if (dx < 0) {
+          nextCard();
+        } else {
+          prevCard();
+        }
+      }
+    }, { passive: true });
+  }
+
+  function renderApp() {
+    updateDeckStatus();
+    renderAdminPanel();
+
+    if (showingForm) {
+      renderForm();
+      updateMobileStudyControls();
+      return;
+    }
+
+    if (mode === "study") {
+      renderStudyMode();
+    } else {
+      renderQuizMode();
+    }
+
+    updateMobileStudyControls();
+  }
+
+  document.addEventListener("keydown", function(e) {
+    if (mode !== "study" || showingForm) return;
+    if (e.code === "Space") {
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      e.preventDefault();
+      toggleAnswer();
+    }
+    if (e.key === "ArrowRight") {
+      nextCard();
+    }
+    if (e.key === "ArrowLeft") {
+      prevCard();
+    }
+  });
+
+  window.addEventListener("resize", updateMobileStudyControls);
+
+  updateDeckStatus();
+  updateModeButtons();
+  renderAdminPanel();
+  renderApp();
+</script>
 </body>
 </html>
