@@ -113,8 +113,8 @@ const cards = [
   },
   {
     "id": "card_61",
-    "front_image_url_1": "",
-    "front_image_url_2": "",
+    "front_image_url_1": "https://apps.rhs.org.uk/plantselectorimages/detail/elbo15016.jpg",
+    "front_image_url_2": "https://www.gardenia.net/wp-content/uploads/2023/05/canna-pretoria-canna-lily-770x533.webp",
     "front_image_url_3": "",
     "rhs_url": "https://www.rhs.org.uk/plants/108258/canna-pretoria/details",
     "back_text": "Canna indica ‘Pretoria’\n\n(Indian shot)\n\nCanna (La) - cane/reed\nindica (La) - of India\n‘Pretoria’ - Introduced to Africa by Indian merchants\nor due to popularity in this city"
@@ -242,7 +242,7 @@ const cards = [
   {
     "id": "card_77",
     "front_image_url_1": "https://images.immediate.co.uk/production/volatile/sites/10/2018/08/b76ad1af-490e-4a81-a6f1-fe818de47d34-9552974.jpg?quality=90&webp=true&resize=800,534",
-    "front_image_url_2": "",
+    "front_image_url_2": "https://www.gardensonline.com.au/Uploads/Plant/1381/Heliotropium-Arborescens-Gatton-Park.jpg",
     "front_image_url_3": "",
     "rhs_url": "https://www.rhs.org.uk/plants/90613/heliotropium-arborescens/details",
     "back_text": "Helipotropium arborescens\n\n(common heliotrope)\n\nHelio (Gr) - Sun\ntrope (Gr) - turn\n(flowers turn to the sun)\narborescens - treelike i.e. becomes woody (secondary thickening)"
